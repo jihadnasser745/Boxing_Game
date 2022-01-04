@@ -1,0 +1,598 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 1/14/2021 7:33:10 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Program    : Gravity Pong FINAL
+00000000                             3  * Written by : Timothy Hooker 
+00000000                             4  * Date       : 4-24-2013
+00000000                             5  * Description: Pong style game that has gravity
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  
+00001000                             8          ORG     $1000
+00001000                             9  START:         
+00001000  6100 009E                 10                  BSR             START_SCREEN
+00001004  6100 011C                 11                  BSR             SET_BALL
+00001008                            12  * ENABLE BUFFER
+00001008  303C 005C                 13                  MOVE            #92,D0                  ; Set Drawing mode
+0000100C  323C 0011                 14                  MOVE            #17,D1                  ; Mode 17 enables double buffering
+00001010  4E4F                      15                  TRAP            #15                     ; Run task
+00001012                            16          
+00001012                            17          
+00001012                            18  * TIMER
+00001012  303C 0008                 19                  MOVE            #8,D0                   ; Get time in D1.L
+00001016  4E4F                      20                  TRAP            #15                     ; Run task
+00001018  23C1 00001712             21                  MOVE.L          D1,S_TIME               ; Move time to S_TIME
+0000101E                            22  
+0000101E  303C 0008                 23  TIMER           MOVE            #8,D0                   ; Get new time
+00001022  4E4F                      24                  TRAP            #15                     ; Run task
+00001024  2401                      25                  MOVE.L          D1,D2                   ; copy new time to 
+00001026  94B9 00001712             26                  SUB.L           S_TIME,D2               ; Subtract S_TIME from new time
+0000102C  B4B9 00001716             27                  CMP.L           DELAY,D2                ; Compare DELAY to elapsed time
+00001032  6C00 0004                 28                  BGE             LOOP                    
+00001036  60E6                      29                  BRA             TIMER
+00001038                            30  
+00001038                            31  LOOP             
+00001038  23C1 00001712             32                  MOVE.L          D1,S_TIME               ; Set new s_time 
+0000103E                            33                  * If GAME_IS_RUNNING = TRUE
+0000103E                            34                  IF.B GAME_IS_RUNNING <EQ> #1 THEN
+0000104A  6100 017C                 35                  BSR             INCREASE_BALL_SPEED
+0000104E  6100 01A0                 36                  BSR             MOVE_BALL  
+00001052  6100 01F2                 37                  BSR             CHECK_BALL
+00001056                            38                  ENDI
+00001056  6100 03C0                 39                  BSR             CHECK_KEY_PRESS
+0000105A  6100 0546                 40                  BSR             PAINT                   ; Paint screen
+0000105E  60BE                      41                  BRA             TIMER                   ; Branch to timer
+00001060                            42                  
+00001060                            43  GAME_OVER
+00001060                            44                  *CLEAR SCREEN
+00001060  7057                      45                  MOVE.L          #87,D0                  ; draw rectangle
+00001062  7200                      46                  MOVE.L          #0,D1                   ; Set left X position to 0          
+00001064  7400                      47                  MOVE.L          #0,D2                   ; Set top y position to 0
+00001066  263C 00000280             48                  MOVE.L          #640,D3                 ; Set width to 640
+0000106C  283C 000001E0             49                  MOVE.L          #480,D4                 ; Set height to 480
+00001072  4E4F                      50                  TRAP            #15 
+00001074                            51                  
+00001074                            52                  *CHANGE FONT SIZE
+00001074  303C 0015                 53                  MOVE            #21,D0                  ; Task 21 changes font size
+00001078  223C 00FFFFFF             54                  MOVE.L          #$00FFFFFF,D1           ; Color = white
+0000107E  243C 05180005             55                  MOVE.L          #$05180005,D2           ; Lucidia Sans Typewriter size=18
+00001084  4E4F                      56                  TRAP            #15                     ; run task
+00001086                            57                  
+00001086                            58                  *DRAW STRING
+00001086  303C 005F                 59                  MOVE            #95,D0                  ; Draw string located at A1
+0000108A  323C 00C8                 60                  MOVE.W          #200,D1                 ; Set x position of string
+0000108E  343C 00DC                 61                  MOVE.W          #220,D2                 ; Set y position of string
+00001092  4E4F                      62                  TRAP            #15                     ; Run task
+00001094                            63                  
+00001094                            64                  * DRAW FROM BUFFER
+00001094  303C 005E                 65                  MOVE            #94,D0                  ; Draw from buffer
+00001098  4E4F                      66                  TRAP            #15                     ; Run task
+0000109A                            67  
+0000109A                            68                  
+0000109A  103C 0009                 69                  MOVE.B          #9,D0                   ; Halt simulator
+0000109E  4E4F                      70                  TRAP            #15                     ; Run task
+000010A0                            71  ****************************************************************************************************************        
+000010A0                            72  * Subroutines
+000010A0                            73  ****************************************************************************************************************
+000010A0                            74  START_SCREEN
+000010A0                            75                  * DRAW START SCREEN
+000010A0  3239 00001738             76                  MOVE.W          START_X,D1              ; Start screen text x position
+000010A6  3439 0000173A             77                  MOVE.W          START_Y,D2              ; Start screen text y position
+000010AC  303C 005F                 78                  MOVE            #95,D0                  ; Draw string located at A1
+000010B0  0641 0078                 79                  ADD.W           #120,D1                 ; Move x position right to center string
+000010B4  43F9 0000173C             80                  LEA             START_L1,A1             ; point to string for line 1
+000010BA  4E4F                      81                  TRAP            #15                     ; run task
+000010BC  3239 00001738             82                  MOVE.W          START_X,D1              ; move start x to next string x position
+000010C2  0642 0020                 83                  ADD.W           #32,D2                  ; Move y position down for next string
+000010C6  43F9 00001749             84                  LEA             START_L2,A1             ; point to string for line 2
+000010CC  4E4F                      85                  TRAP            #15                     ; run task
+000010CE  0642 0010                 86                  ADD.W           #16,D2                  ; Move y position down for next string
+000010D2  43F9 00001750             87                  LEA             START_L3,A1             ; point to string for line 3
+000010D8  4E4F                      88                  TRAP            #15                     ; run task
+000010DA  0642 0010                 89                  ADD.W           #16,D2                  ; Move y position down for next string
+000010DE  43F9 00001776             90                  LEA             START_L4,A1             ; point to string for line 4
+000010E4  4E4F                      91                  TRAP            #15                     ; run task
+000010E6  0642 0020                 92                  ADD.W           #32,D2                  ; Move y position down for next string
+000010EA  43F9 000017A1             93                  LEA             START_L5,A1             ; point to string for line 5
+000010F0  4E4F                      94                  TRAP            #15                     ; run task
+000010F2  0642 0010                 95                  ADD.W           #16,D2                  ; Move y position down for next string
+000010F6  43F9 000017AB             96                  LEA             START_L6,A1             ; point to string for line 6
+000010FC  4E4F                      97                  TRAP            #15                     ; run task
+000010FE  0642 0010                 98                  ADD.W           #16,D2                  ; Move y position down for next string
+00001102  43F9 000017D7             99                  LEA             START_L7,A1             ; point to string for line 7
+00001108  4E4F                     100                  TRAP            #15                     ; run task
+0000110A  0641 004C                101                  ADD.W           #76,D1                  ; Move x position right to center string
+0000110E  0642 0020                102                  ADD.W           #32,D2                  ; Move y position down for next string
+00001112  43F9 00001803            103                  LEA             START_L8,A1             ; point to string for line 8
+00001118  4E4F                     104                  TRAP            #15                     ; run task
+0000111A  303C 0005                105                  MOVE            #5,D0                   ; wait for input from keyboard
+0000111E  4E4F                     106                  TRAP            #15                     ; run task
+00001120  4E75                     107                  RTS             
+00001122                           108  ****************************************************************************************************************
+00001122                           109  ****************************************************************************************************************               
+00001122                           110  SET_BALL
+00001122                           111                  *IF IT'S PLAYER1 SERVE
+00001122                           112              IF.B P_SERVE <EQ> #1 THEN
+0000112E  23F9 000016DA 000016AA   113                  MOVE.L          P1_X,BALL_X             ; ball_x position = P1 paddle x position
+00001138  2039 000016EA            114                  MOVE.L          P_W,D0                  ; move paddle width to D0
+0000113E  D1B9 000016AA            115                  ADD.L           D0,BALL_X               ; add paddle width to ball x position
+00001144  23F9 000016DE 000016AE   116                  MOVE.L          P1_Y,BALL_Y             ; ball y position = P1 paddle y position
+0000114E  06B9 00000025 000016AE   117                  ADD.L           #37,BALL_Y              ; move ball y position to center of paddle              
+00001158  23FC 000000C8 000016E6   118                  MOVE.L          #200,P2_Y               ; move P2 paddle to center of screen
+00001162                           119                  
+00001162                           120                  *IF IT'S PLAYER2 SERVE
+00001162                           121              ELSE
+00001166  23F9 000016E2 000016AA   122                  MOVE.L          P2_X,BALL_X             ; ball_x position = P2 paddle x position
+00001170  2039 000016BA            123                  MOVE.L          BALL_DI,D0              ; Move ball diameter to D0
+00001176  91B9 000016AA            124                  SUB.L           D0,BALL_X               ; move ball to rest on P2 paddle
+0000117C  23F9 000016E6 000016AE   125                  MOVE.L          P2_Y,BALL_Y             ; ball y position = P2 paddle y position 
+00001186  06B9 00000025 000016AE   126                  ADD.L           #37,BALL_Y              ; move ball y position to center of paddle
+00001190  23FC 000000C8 000016DE   127                  MOVE.L          #200,P1_Y               ; move P1 paddle to center of screen
+0000119A  23F9 000016AA 000016B6   128                  MOVE.L          BALL_X,BALL_RIGHT       ; copy ball x to ball right
+000011A4  D1B9 000016B6            129                  ADD.L           D0,BALL_RIGHT           ; add ball diameter to ball right 
+000011AA                           130              ENDI
+000011AA  23FC 00000002 000016CA   131                  MOVE.L          #2,BALL_HS              ; reset ball hoizontal speed to 2
+000011B4  23FC 00000001 000016CE   132                  MOVE.L          #1,BALL_VS              ; reset ball vertical speed to 1
+000011BE  13FC 0000 0000171A       133                  MOVE.B          #0,GAME_IS_RUNNING      ; stop game loop from running
+000011C6  4E75                     134                  RTS               
+000011C8                           135  ****************************************************************************************************************
+000011C8                           136  **************************************************************************************************************** 
+000011C8                           137  INCREASE_BALL_SPEED
+000011C8  2439 000016D2            138                  MOVE.L          BALL_AC,D2              ; move acceleration rate to D2 for comparison
+000011CE  52B9 000016D6            139                  ADD.L           #1,COUNT                ; Add 1 to the count
+000011D4                           140                  *; IF COUNT = BALL ACCELERATION RATE
+000011D4                           141              IF.L COUNT <EQ> D2 THEN                         
+000011DE  52B9 000016CE            142                  ADD.L           #1,BALL_VS              ; add 1 to ball vertical speed
+000011E4  23FC 00000000 000016D6   143                  MOVE.L          #0,COUNT                ; reset count to 0
+000011EE                           144              ENDI
+000011EE  4E75                     145                  RTS
+000011F0                           146  ****************************************************************************************************************
+000011F0                           147  ****************************************************************************************************************
+000011F0                           148  MOVE_BALL       *UPDATE BALL POSITION
+000011F0  2239 000016AE            149                  MOVE.L          BALL_Y,D1               ; Move BALL_Y to D1 
+000011F6  D2B9 000016CE            150                  ADD.L           BALL_VS,D1              ; Add BALL_VS TO D1
+000011FC  23C1 000016AE            151                  MOVE.L          D1,BALL_Y               ; Move D1 to BALL_Y
+00001202  D2B9 000016BE            152                  ADD.L           BALL_RAD,D1             ; Add BALL_RAD to D1
+00001208  23C1 000016C6            153                  MOVE.L          D1,BALL_YCENTER         ; Move D1 to BALL_YCENTER
+0000120E  D2B9 000016BE            154                  ADD.L           BALL_RAD,D1             ; Add BALL_RAD TO D1
+00001214  23C1 000016B2            155                  MOVE.L          D1,BALL_B               ; Move D1 to BALL_B
+0000121A  2239 000016AA            156                  MOVE.L          BALL_X,D1               ; Move BALL_X to D1
+00001220  D2B9 000016CA            157                  ADD.L           BALL_HS,D1              ; Add BALL_HS to D1
+00001226  23C1 000016AA            158                  MOVE.L          D1,BALL_X               ; Move D1 to BALL_X
+0000122C  D2B9 000016BE            159                  ADD.L           BALL_RAD,D1             ; Add BALL_RAD,D1
+00001232  23C1 000016C2            160                  MOVE.L          D1,BALL_XCENTER         ; Move D1 to BALL_XCENTER
+00001238  D2B9 000016BE            161                  ADD.L           BALL_RAD,D1             ; Add BALL_RAD to D1
+0000123E  23C1 000016B6            162                  MOVE.L          D1,BALL_RIGHT           ; Move D1 to BALL_RIGHT
+00001244  4E75                     163                  RTS
+00001246                           164  ****************************************************************************************************************
+00001246                           165  ****************************************************************************************************************
+00001246                           166  CHECK_BALL      
+00001246  6100 000C                167                  BSR             COURT_COLLISION
+0000124A  6100 005E                168                  BSR             PADDLE_COLLISION
+0000124E  6100 013E                169                  BSR             SCORE
+00001252  4E75                     170                  RTS
+00001254                           171  ****************************************************************************************************************
+00001254                           172  ****************************************************************************************************************
+00001254                           173  COURT_COLLISION
+00001254  2439 000016B2            174                  MOVE.L          BALL_B,D2               ; Move ball bottom to D2
+0000125A                           175                  * If BALL_B > COURT_Y
+0000125A                           176          IF.L D2 <GT> COURT_Y THEN                       
+00001264  2039 000016FA            177                  MOVE.L          COURT_X,D0              ; Move COURT_X to D0
+0000126A  2239 00001702            178                  MOVE.L          COURT_RIGHT,D1          ; Copy court x position to D1
+00001270                           179        
+00001270                           180                  * IF COURT_X <= BALL_XCENTER <= COURT RIGHT X
+00001270                           181              IF.L BALL_XCENTER <GE> D0 AND.L BALL_XCENTER <LE> D1 THEN            
+00001284  44B9 000016CE            182                  NEG.L           BALL_VS                 ; Reverse ball vertical direction
+0000128A  2439 0000170E            183                  MOVE.L          COURT_DE,D2             ; Move deceleration of ball caused by court hit to D2
+00001290  D5B9 000016CE            184                  ADD.L           D2,BALL_VS              ; Decrease speed
+00001296  2639 000016FE            185                  MOVE.L          COURT_Y,D3              ; Move court top to D3
+0000129C  96B9 000016BA            186                  SUB.L           BALL_DI,D3              ; Get new ball top position
+000012A2  23C3 000016AE            187                  MOVE.L          D3,BALL_Y               ; Move ball top to new position 
+000012A8                           188              ENDI
+000012A8                           189          ENDI
+000012A8  4E75                     190                  RTS 
+000012AA                           191  ****************************************************************************************************************
+000012AA                           192  ****************************************************************************************************************                
+000012AA                           193  PADDLE_COLLISION
+000012AA                           194                  
+000012AA                           195                  *LEFT PADDLE
+000012AA  2039 000016DA            196                  MOVE.L          P1_X,D0                 ; Move P1_X,D0
+000012B0  D0B9 000016EA            197                  ADD.L           P_W,D0                  ; Get paddle right in D0 
+000012B6                           198                  * IF BALL_XCENTER > P1_RIGHT AND BALL_X <= P1_RIGHT
+000012B6                           199          IF.L BALL_XCENTER <GT> D0 AND.L BALL_X <LE> D0 THEN                   
+000012CA  2239 000016DE            200                  MOVE.L          P1_Y,D1                 ; move P1_Y to D1
+000012D0  2439 000016DE            201                  MOVE.L          P1_Y,D2                 ; Move P1_Y to D2
+000012D6  D4B9 000016EE            202                  ADD.L           P_H,D2                  ; Get paddle bottom in D2
+000012DC                           203                  * IF BALL_YCENTER >= P1_TOP AND BALL_YCENTER <= P1_BOTTOM
+000012DC                           204              IF.L BALL_YCENTER <GE> D1 AND.L BALL_YCENTER <LE> D2 THEN 
+000012F0  2639 000016F6            205                  MOVE.L          P_BOOST,D3              ; Move paddle speed boost to D3
+000012F6  23C0 000016AA            206                  MOVE.L          D0,BALL_X               ; Move P1_RIGHT to BALL_X
+000012FC  44B9 000016CA            207                  NEG.L           BALL_HS                 ; Rervers BALL_HS
+00001302  D7B9 000016CA            208                  ADD.L           D3,BALL_HS              ; Add paddle speed boost to Ball horizontal speed
+00001308                           209                  * IF BALL_VS > 0
+00001308                           210                  IF.L BALL_VS <GT> #0 THEN
+00001316  44B9 000016CE            211                  NEG.L           BALL_VS                 ; reverse ball vertical speed
+0000131C                           212                  ENDI
+0000131C                           213              ENDI    
+0000131C                           214          ENDI
+0000131C                           215          
+0000131C                           216                  *RIGHT PADDLE
+0000131C  2039 000016E2            217                  MOVE.L          P2_X,D0                 ; Move P2_X,D0   
+00001322                           218                  * IF BALL_XCENTER < P2_X AND BALL_RIGHT >= P2_X       
+00001322                           219          IF.L BALL_XCENTER <LT> D0 AND.L BALL_RIGHT <GE> D0 THEN                   
+00001336  2239 000016E6            220                  MOVE.L          P2_Y,D1                 ; move P2_Y to D1
+0000133C  2439 000016E6            221                  MOVE.L          P2_Y,D2                 ; Move P2_Y to D2
+00001342  D4B9 000016EE            222                  ADD.L           P_H,D2                  ; Get paddle bottom in D2
+00001348                           223                  * IF BALL_YCENTER >= P2_Y AND BALL_YCENTER <= P2_BOTTOM
+00001348                           224              IF.L BALL_YCENTER <GE> D1 AND.L BALL_YCENTER <LE> D2 THEN
+0000135C  2639 000016F6            225                  MOVE.L          P_BOOST,D3              ; Move paddle speed boost to D3
+00001362  D7B9 000016CA            226                  ADD.L           D3,BALL_HS              ; Add paddle speed boost to Ball horizontal speed
+00001368  90B9 000016BA            227                  SUB.L           BALL_DI,D0              ; subtract ball diameter from P2 x position
+0000136E  23C0 000016AA            228                  MOVE.L          D0,BALL_X               ; set new x position for ball
+00001374  44B9 000016CA            229                  NEG.L           BALL_HS                 ; reverse ball HS
+0000137A                           230                  * IF BALL_VS > 0
+0000137A                           231                  IF.L BALL_VS <GT> #0 THEN
+00001388  44B9 000016CE            232                  NEG.L           BALL_VS                 ; reverse ball vertical speed
+0000138E                           233                  ENDI
+0000138E                           234              ENDI    
+0000138E                           235          ENDI
+0000138E                           236  ****************************************************************************************************************
+0000138E                           237  ****************************************************************************************************************        
+0000138E                           238  SCORE
+0000138E                           239              IF.L BALL_X <GE> #640 THEN
+0000139C                           240                  *IF IT'S PLAYER1 SERVER
+0000139C                           241                  IF.B P_SERVE <EQ> #1 THEN
+000013A8  0679 0100 00001730       242                  ADD             #$100,P1_SCORE          
+000013B0                           243                  ENDI
+000013B0  13FC 0001 0000171B       244                  MOVE.B          #1,P_SERVE              
+000013B8  6100 FD68                245                  BSR             SET_BALL        
+000013BC                           246                  IF P1_SCORE <EQ> #$3300 THEN
+000013C8  43F9 0000181B            247                  LEA             P1_WIN,A1
+000013CE  6000 FC90                248                  BRA             GAME_OVER
+000013D2                           249                  ENDI
+000013D2                           250              ENDI
+000013D2                           251                  
+000013D2                           252              IF.L BALL_RIGHT <LE> #0 THEN
+000013E0                           253                  *IF IT'S PLAYER2 SERVE
+000013E0                           254                  IF.B P_SERVE <EQ> #2 THEN
+000013EC  0679 0100 00001734       255                  ADD             #$100,P2_SCORE
+000013F4                           256                  ENDI
+000013F4  13FC 0002 0000171B       257                  MOVE.B          #2,P_SERVE
+000013FC  6100 FD24                258                  BSR             SET_BALL
+00001400                           259                  IF P2_SCORE <EQ> #$3300 THEN
+0000140C  43F9 00001829            260                  LEA             P2_WIN,A1
+00001412  6000 FC4C                261                  BRA             GAME_OVER
+00001416                           262                  ENDI
+00001416                           263              ENDI
+00001416  4E75                     264                  RTS
+00001418                           265  ****************************************************************************************************************
+00001418                           266  ****************************************************************************************************************               
+00001418                           267  CHECK_KEY_PRESS
+00001418  2439 000016F2            268                  MOVE.L          P_SPEED,D2
+0000141E  7013                     269                  MOVE.L          #19,D0                  ; return current state of up to 4 specified keys
+00001420                           270              IF.B GAME_IS_RUNNING <EQ> #1 THEN
+0000142C  223C 415A4B4D            271                  MOVE.L          #'A'<<24+'Z'<<16+'K'<<8+'M',D1
+00001432                           272              ENDI
+00001432                           273              IF.B GAME_IS_RUNNING <EQ> #0 THEN
+0000143E                           274                  IF.B P_SERVE <EQ> #1 THEN
+0000144A  223C 415A2020            275                  MOVE.L          #'A'<<24+'Z'<<16+$20<<8+$20,D1
+00001450                           276                  ENDI
+00001450                           277                  IF.B P_SERVE <EQ> #2 THEN
+0000145C  223C 20204B4D            278                  MOVE.L          #$20<<24+$20<<16+'K'<<8+'M',D1
+00001462                           279                  ENDI
+00001462                           280              ENDI
+00001462  4E4F                     281                  TRAP            #15
+00001464                           282                  
+00001464  0801 0018                283                  BTST.L          #24,D1
+00001468                           284              IF <NE> THEN
+0000146C  2639 000016DE            285                  MOVE.L          P1_Y,D3
+00001472  D6B9 000016EE            286                  ADD.L           P_H,D3
+00001478                           287                  IF.L D3 <GE> #90 THEN
+00001482  95B9 000016DE            288                  SUB.L           D2,P1_Y
+00001488                           289                  IF.B GAME_IS_RUNNING <EQ> #0 AND.B P_SERVE <EQ> #1 THEN
+000014A0  95B9 000016AE            290                  SUB.L           D2,BALL_Y
+000014A6                           291                  ENDI
+000014A6                           292                  ENDI
+000014A6                           293              ENDI
+000014A6                           294              
+000014A6  0801 0010                295                  BTST.L          #16,D1
+000014AA                           296              IF <NE> THEN
+000014AE                           297                  IF.L P1_Y <LE> #382 THEN
+000014BC  D5B9 000016DE            298                  ADD.L           D2,P1_Y
+000014C2                           299                  IF.B GAME_IS_RUNNING <EQ> #0 AND.B P_SERVE <EQ> #1 THEN
+000014DA  D5B9 000016AE            300                  ADD.L           D2,BALL_Y
+000014E0                           301                  ENDI
+000014E0                           302                  ENDI
+000014E0                           303              ENDI
+000014E0                           304              
+000014E0  0801 0008                305                  BTST.L          #8,D1
+000014E4                           306              IF <NE> THEN
+000014E8  2639 000016E6            307                  MOVE.L          P2_Y,D3
+000014EE  D6B9 000016EE            308                  ADD.L           P_H,D3
+000014F4                           309                  IF.L D3 <GE> #90 THEN
+000014FE  95B9 000016E6            310                  SUB.L           D2,P2_Y
+00001504                           311                  IF.B GAME_IS_RUNNING <EQ> #0 AND.B P_SERVE <EQ> #2 THEN
+0000151C  95B9 000016AE            312                  SUB.L           D2,BALL_Y
+00001522                           313                  ENDI
+00001522                           314                  ENDI
+00001522                           315              ENDI
+00001522                           316              
+00001522  0801 0000                317                  BTST.L          #0,D1
+00001526                           318              IF <NE> THEN
+0000152A                           319                  IF.L P2_Y <LE> #382 THEN
+00001538  D5B9 000016E6            320                  ADD.L           D2,P2_Y
+0000153E                           321                  IF.B GAME_IS_RUNNING <EQ> #0 AND.B P_SERVE <EQ> #2 THEN
+00001556  D5B9 000016AE            322                  ADD.L           D2,BALL_Y
+0000155C                           323                  ENDI
+0000155C                           324                  ENDI
+0000155C                           325              ENDI
+0000155C                           326              
+0000155C                           327              
+0000155C                           328              IF.B GAME_IS_RUNNING <EQ> #0 THEN
+00001568                           329                  IF.B P_SERVE <EQ> #1 THEN
+00001574  0801 0000                330                  BTST.L          #0,D1
+00001578                           331                  IF <NE> THEN
+0000157C  13FC 0001 0000171A       332                  MOVE.B          #1,GAME_IS_RUNNING
+00001584                           333                  ENDI
+00001584                           334                  ENDI
+00001584                           335                  IF.B P_SERVE <EQ> #2 THEN
+00001590  0801 0018                336                  BTST.L          #24,D1
+00001594                           337                  IF <NE> THEN
+00001598  13FC 0001 0000171A       338                  MOVE.B          #1,GAME_IS_RUNNING
+000015A0                           339                  ENDI
+000015A0                           340                  ENDI
+000015A0                           341              ENDI                        
+000015A0  4E75                     342                  RTS
+000015A2                           343  ****************************************************************************************************************
+000015A2                           344  ****************************************************************************************************************                
+000015A2                           345  PAINT           
+000015A2                           346                  *CLEAR SCREEN
+000015A2  7057                     347                  MOVE.L          #87,D0                  ; draw rectangle
+000015A4  7200                     348                  MOVE.L          #0,D1                   ; Set left X position to 0          
+000015A6  7400                     349                  MOVE.L          #0,D2                   ; Set top y position to 0
+000015A8  263C 00000280            350                  MOVE.L          #640,D3                 ; Set width to 640
+000015AE  283C 000001E0            351                  MOVE.L          #480,D4                 ; Set height to 480
+000015B4  4E4F                     352                  TRAP            #15                     ; Run task
+000015B6                           353                  
+000015B6                           354                  * DRAW SCORES
+000015B6  303C 005F                355                  MOVE            #95,D0                  ; draw string at A1
+000015BA  43F9 0000171C            356                  LEA             P1,A1                   ; point to string at P1
+000015C0  323C 0050                357                  MOVE.W          #80,D1                  ; set string x position
+000015C4  343C 0002                358                  MOVE.W          #2,D2                   ; set string y position
+000015C8  4E4F                     359                  TRAP            #15                     ; Run task
+000015CA  43F9 00001726            360                  LEA             P2,A1                   ; point to string at p2
+000015D0  323C 0190                361                  MOVE.W          #400,D1                 ; set string x position
+000015D4  4E4F                     362                  TRAP            #15                     ; Run task
+000015D6  43F9 00001730            363                  LEA             P1_SCORE,A1             ; point to string at P1_SCORE
+000015DC  323C 008C                364                  MOVE.W          #140,D1                 ; set string x position
+000015E0  4E4F                     365                  TRAP            #15                     ; Run task
+000015E2  43F9 00001734            366                  LEA             P2_SCORE,A1             ; point to string at P2_SCORE
+000015E8  323C 01CC                367                  MOVE.W          #460,D1                 ; set string x position
+000015EC  4E4F                     368                  TRAP            #15                     ; Run task
+000015EE                           369                  
+000015EE                           370                  * CHANGE FILL COLOR TO WHITE    
+000015EE  303C 0051                371                  MOVE            #81,D0                  ; Change fill color
+000015F2  223C 00FFFFFF            372                  MOVE.L          #$00FFFFFF,D1           ; move hex WHITE to D1
+000015F8  4E4F                     373                  TRAP            #15                     ; Run task
+000015FA                           374  
+000015FA                           375              
+000015FA                           376                     * DRAW BALL
+000015FA  7058                     377                  MOVE.L          #88,D0      
+000015FC  2239 000016AA            378                  MOVE.L          BALL_X,D1
+00001602  2439 000016AE            379                  MOVE.L          BALL_Y,D2
+00001608  2639 000016AA            380                  MOVE.L          BALL_X,D3
+0000160E  2839 000016AE            381                  MOVE.L          BALL_Y,D4
+00001614  D6B9 000016BA            382                  ADD.L           BALL_DI,D3
+0000161A  D8B9 000016BA            383                  ADD.L           BALL_DI,D4
+00001620  4E4F                     384                  TRAP            #15                     ; Run task
+00001622                           385                
+00001622                           386  
+00001622                           387                  * DRAW PLAYER 1 PADDLE
+00001622  7057                     388                  MOVE.L          #87,D0                  ; draw rectangle
+00001624  2239 000016DA            389                  MOVE.L          P1_X,D1                 ; set rectangle x position
+0000162A  2439 000016DE            390                  MOVE.L          P1_Y,D2                 ; set rectangle y position
+00001630  2639 000016DA            391                  MOVE.L          P1_X,D3
+00001636  2839 000016DE            392                  MOVE.L          P1_Y,D4
+0000163C  D6B9 000016EA            393                  ADD.L           P_W,D3
+00001642  D8B9 000016EE            394                  ADD.L           P_H,D4
+00001648  4E4F                     395                  TRAP            #15                     ; Run task
+0000164A                           396  
+0000164A                           397                  
+0000164A                           398                  * DRAW PLAYER 2 PADDLE
+0000164A  7057                     399                  MOVE.L          #87,D0                  ; draw rectangle
+0000164C  2239 000016E2            400                  MOVE.L          P2_X,D1                 ; set rectangle x position
+00001652  2439 000016E6            401                  MOVE.L          P2_Y,D2                 ; set rectangle y position
+00001658  2639 000016E2            402                  MOVE.L          P2_X,D3
+0000165E  2839 000016E6            403                  MOVE.L          P2_Y,D4
+00001664  D6B9 000016EA            404                  ADD.L           P_W,D3
+0000166A  D8B9 000016EE            405                  ADD.L           P_H,D4
+00001670  4E4F                     406                  TRAP            #15                     ; Run task
+00001672                           407  
+00001672                           408                  
+00001672                           409                  * DRAW COURT
+00001672  7057                     410                  MOVE.L          #87,D0                  ; draw rectangle
+00001674  2239 000016FA            411                  MOVE.L          COURT_X,D1              ; set rectangle x position
+0000167A  2439 000016FE            412                  MOVE.L          COURT_Y,D2              ; set rectangle y position
+00001680  2639 000016FA            413                  MOVE.L          COURT_X,D3              ; move court x to rectangle right x position
+00001686  2839 000016FE            414                  MOVE.L          COURT_Y,D4              ; move court y to rectangle bottom y position
+0000168C  D6B9 00001706            415                  ADD.L           COURT_W,D3              ; add width to get court right
+00001692  D8B9 0000170A            416                  ADD.L           COURT_H,D4              ; add height to get court bottom
+00001698  4E4F                     417                  TRAP            #15                     ; Run task
+0000169A                           418  
+0000169A                           419          
+0000169A                           420                 * CHANGE FILL COLOR TO BLACK 
+0000169A  303C 0051                421                  MOVE            #81,D0                  ; Change fill color
+0000169E  7200                     422                  MOVE.L          #$00000000,D1           ; move hex BLACK to D1
+000016A0  4E4F                     423                  TRAP            #15                     ; Run task
+000016A2                           424  
+000016A2                           425                 
+000016A2                           426                  * DRAW FROM BUFFER
+000016A2  303C 005E                427                  MOVE            #94,D0                  ; draw from buffer
+000016A6  4E4F                     428                  TRAP            #15                     ; Run task
+000016A8  4E75                     429                  RTS
+000016AA                           430  ****************************************************************************************************************
+000016AA                           431  **************************************************************************************************************** 
+000016AA                           432  * Variables and Strings
+000016AA                           433          *ball position and movement variables
+000016AA= 00000140                 434  BALL_X          DC.L            320                     ; Ball starting x position
+000016AE= 00000064                 435  BALL_Y          DC.L            100                     ; Ball starting y position
+000016B2                           436  BALL_B          DS.L            1                       ; Ball bottom
+000016B6                           437  BALL_RIGHT      DS.L            1                       ; Ball right side
+000016BA= 00000010                 438  BALL_DI         DC.L            16                      ; Ball diameter
+000016BE= 00000008                 439  BALL_RAD        DC.L            8                       ; Ball radius
+000016C2                           440  BALL_XCENTER    DS.L            1                       ; Ball X center
+000016C6                           441  BALL_YCENTER    DS.L            1                       ; Ball Y center
+000016CA= 00000002                 442  BALL_HS         DC.L            2                       ; Ball horizontal speed
+000016CE= 00000001                 443  BALL_VS         DC.L            1                       ; Ball vertical speed
+000016D2= 00000004                 444  BALL_AC         DC.L            4                       ; Ball acceleration
+000016D6= 00000000                 445  COUNT           DC.L            0                       ; Ball acceleration loop counter
+000016DA                           446          * paddle position and movement variables
+000016DA= 00000000                 447  P1_X            DC.L            0                       ; P1 paddle starting x position
+000016DE= 000000C8                 448  P1_Y            DC.L            200                     ; P1 paddle starting y position
+000016E2= 00000270                 449  P2_X            DC.L            624                     ; P2 paddle starting x position
+000016E6= 000000C8                 450  P2_Y            DC.L            200                     ; P2 paddle starting y position
+000016EA= 00000010                 451  P_W             DC.L            16                      ; Paddle width
+000016EE= 0000005A                 452  P_H             DC.L            90                      ; Paddle height
+000016F2= 00000006                 453  P_SPEED         DC.L            6                       ; Paddle speed
+000016F6= 00000001                 454  P_BOOST         DC.L            1                       ; amount that each paddle hit will increase BALL_HS
+000016FA                           455          * court and net position variables
+000016FA= 00000000                 456  COURT_X         DC.L            0                       ; Court x postion
+000016FE= 000001D8                 457  COURT_Y         DC.L            472                     ; Court y postion
+00001702= 00000280                 458  COURT_RIGHT     DC.L            640                     ; Value of court Right x
+00001706= 00000280                 459  COURT_W         DC.L            640                     ; Court width
+0000170A= 00000008                 460  COURT_H         DC.L            8                       ; Court height
+0000170E= 00000000                 461  COURT_DE        DC.L            0                       ; Deceleration caused by court hit
+00001712                           462          * timer variables
+00001712                           463  S_TIME          DS.L            1                       ; Saved time
+00001716= 00000002                 464  DELAY           DC.L            2                       ; Delay for loop
+0000171A= 00                       465  GAME_IS_RUNNING DC.B            0                       ; 0=False 1= True
+0000171B                           466          * player variables
+0000171B= 01                       467  P_SERVE         DC.B            1                       ; 1=PLAYER1 2=PLAYER2   
+0000171C= 504C 4159 4552 3...      468  P1              DC.W            'PLAYER1',0             ; player 1 label
+00001726= 504C 4159 4552 3...      469  P2              DC.W            'PLAYER2',0             ; player 2 label
+00001730= 3000 0000                470  P1_SCORE        DC.W            '0',0                   ; player 1 score
+00001734= 3000 0000                471  P2_SCORE        DC.W            '0',0                   ; player 2 score
+00001738                           472          * start screen
+00001738= 0098                     473  START_X         DC.W            152                     ; start screen text start x position
+0000173A= 00A0                     474  START_Y         DC.W            160                     ; start screen text start y position
+0000173C= 47 52 41 56 49 54 ...    475  START_L1        DC.B            'GRAVITY PONG',0        ; start screen string 1
+00001749= 52 55 4C 45 53 3A 00     476  START_L2        DC.B            'RULES:',0              ; start screen string 2
+00001750= 50 4C 41 59 45 52 ...    477  START_L3        DC.B            'PLAYERS CAN ONLY SCORE ON THEIR SERVE',0           ; start screen string 3
+00001776= 54 48 45 20 46 49 ...    478  START_L4        DC.B            'THE FIRST PLAYER TO SCORE THREE TIMES WINS',0      ; start screen string 4
+000017A1= 43 4F 4E 54 52 4F ...    479  START_L5        DC.B            'CONTROLS:',0                                       ; start screen string 5
+000017AB= 50 4C 41 59 45 52 ...    480  START_L6        DC.B            'PLAYER 1 SERVE = SPACEBAR, UP = A, DOWN = Z',0     ; start screen string 6
+000017D7= 50 4C 41 59 45 52 ...    481  START_L7        DC.B            'PLAYER 2 SERVE = SPACEBAR, UP = K, DOWN = M',0     ; start screen string 7
+00001803= 50 52 45 53 53 20 ...    482  START_L8        DC.B            'PRESS ENTER TO CONTINUE',0                         ; start screen string 8
+0000181B                           483          * game over
+0000181B= 50 4C 41 59 45 52 ...    484  P1_WIN          DC.B            'PLAYER1 WINS!',0       ; player 1 wins string
+00001829= 50 4C 41 59 45 52 ...    485  P2_WIN          DC.B            'PLAYER2 WINS!',0       ; player 2 wins string
+00001837                           486  
+00001837                           487                  END             START                   ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+BALL_AC             16D2
+BALL_B              16B2
+BALL_DI             16BA
+BALL_HS             16CA
+BALL_RAD            16BE
+BALL_RIGHT          16B6
+BALL_VS             16CE
+BALL_X              16AA
+BALL_XCENTER        16C2
+BALL_Y              16AE
+BALL_YCENTER        16C6
+CHECK_BALL          1246
+CHECK_KEY_PRESS     1418
+COUNT               16D6
+COURT_COLLISION     1254
+COURT_DE            170E
+COURT_H             170A
+COURT_RIGHT         1702
+COURT_W             1706
+COURT_X             16FA
+COURT_Y             16FE
+DELAY               1716
+GAME_IS_RUNNING     171A
+GAME_OVER           1060
+INCREASE_BALL_SPEED  11C8
+LOOP                1038
+MOVE_BALL           11F0
+P1                  171C
+P1_SCORE            1730
+P1_WIN              181B
+P1_X                16DA
+P1_Y                16DE
+P2                  1726
+P2_SCORE            1734
+P2_WIN              1829
+P2_X                16E2
+P2_Y                16E6
+PADDLE_COLLISION    12AA
+PAINT               15A2
+P_BOOST             16F6
+P_H                 16EE
+P_SERVE             171B
+P_SPEED             16F2
+P_W                 16EA
+SCORE               138E
+SET_BALL            1122
+START               1000
+START_L1            173C
+START_L2            1749
+START_L3            1750
+START_L4            1776
+START_L5            17A1
+START_L6            17AB
+START_L7            17D7
+START_L8            1803
+START_SCREEN        10A0
+START_X             1738
+START_Y             173A
+S_TIME              1712
+TIMER               101E
+_00000000           1056
+_00000001           1166
+_00000002           11AA
+_00000003           11EE
+_00000004           12A8
+_00000005           12A8
+_00000006           131C
+_00000007           131C
+_00000008           131C
+_00000009           138E
+_0000000A           138E
+_0000000B           138E
+_0000000C           13D2
+_0000000D           13B0
+_0000000E           13D2
+_0000000F           1416
+_00000010           13F4
+_00000011           1416
+_00000012           1432
+_00000013           1462
+_00000014           1450
+_00000015           1462
+_00000016           14A6
+_00000017           14A6
+_00000018           14A6
+_00000019           14E0
+_0000001A           14E0
+_0000001B           14E0
+_0000001C           1522
+_0000001D           1522
+_0000001E           1522
+_0000001F           155C
+_00000020           155C
+_00000021           155C
+_00000022           15A0
+_00000023           1584
+_00000024           1584
+_00000025           15A0
+_00000026           15A0

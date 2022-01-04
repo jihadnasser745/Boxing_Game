@@ -1,0 +1,2348 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/27/2021 8:40:58 PM
+
+00000000                             1  *------------------------------------------------------------------------------------------------------------------
+00000000                             2  * Title      : ATARI BOXING GAME
+00000000                             3  * Written by : OMAR OMAR 1733 - JIHAD NASSER 1513
+00000000                             4  * Date       : 2-1-2021
+00000000                             5  *------------------------------------------------------------------------------------------------------------------
+00001000                             6      ORG    $1000                  ; first instruction of program
+00001000                             7  
+00001000                             8  * Put program code here
+00001000                             9                  
+00001000                            10  START:
+00001000  6100 0054                 11                  BSR             START_SCREEN             ;START SCREEN
+00001004  43F9 00003380             12                  LEA             ROUND1,A1                ;LOAD SOUND ROUND 1
+0000100A  7200                      13                  MOVE.L          #0,D1
+0000100C  704A                      14                  MOVE.L          #74,D0
+0000100E  4E4F                      15                  TRAP            #15
+00001010  704B                      16                  MOVE.L          #75,D0                  ;PLAY SOUND ROUND 1
+00001012  7200                      17                  MOVE.L          #0,D1
+00001014  4E4F                      18                  TRAP            #15
+00001016                            19  
+00001016                            20                                   * ENABLE BUFFER
+00001016  303C 005C                 21                  MOVE            #92,D0                  ; Set Drawing mode
+0000101A  323C 0011                 22                  MOVE            #17,D1                  ; Mode 17 enables double buffering
+0000101E  4E4F                      23                  TRAP            #15                                               
+00001020  6100 00DA                 24                  BSR             PAINT
+00001024  103C 0017                 25                  MOVE.B          #23,D0                  ;delay to reduce cpu workload
+00001028  223C 000000C8             26                  MOVE.L          #200,D1                 ;delay 2 sec
+0000102E  4E4F                      27                  TRAP            #15                     ;execute delay
+00001030  6100 0002                 28                  BSR             GAME
+00001034                            29                  
+00001034  6100 0AC6                 30  GAME:           BSR             KEY_CHECKP1             ;GO TO SUBROUTINE
+00001038  6100 0E56                 31                  BSR             KEY_CHECKP2
+0000103C  6100 1188                 32                  BSR             KEY_CHECKPUNCH1
+00001040  6100 16FA                 33                  BSR             KEY_CHECKPUNCH2
+00001044  103C 0017                 34                  MOVE.B          #23,D0                  ;delay to reduce cpu workload
+00001048  7201                      35                  MOVE.L          #1,D1                   ;delay 1/100 sec
+0000104A  4E4F                      36                  TRAP            #15                     ;execute delay
+0000104C  6100 00AE                 37                  BSR             PAINT
+00001050  6100 1C16                 38                  BSR             SCORE
+00001054  60DE                      39                  BRA             GAME                    ;BRANCHEMENT INFINIE
+00001056                            40  
+00001056                            41  
+00001056                            42  
+00001056                            43  
+00001056                            44  *******************************************************************************************************************
+00001056                            45  *******************************************************************************************************************
+00001056                            46  
+00001056                            47  
+00001056                            48                      * DRAW START SCREEN
+00001056  3239 000033F2             49  START_SCREEN:   MOVE.W          START_X,D1              ; Start screen text x position
+0000105C  3439 000033F4             50                  MOVE.W          START_Y,D2              ; Start screen text y position
+00001062  303C 005F                 51                  MOVE            #95,D0                  ; Draw string located at A1
+00001066  0641 0078                 52                  ADD.W           #120,D1                 ; Move x position right to center string
+0000106A  43F9 000033F6             53                  LEA             START_L1,A1             ;  line 1
+00001070  4E4F                      54                  TRAP            #15                     
+00001072  3239 000033F2             55                  MOVE.W          START_X,D1              ; move start x to next string x position
+00001078  0642 0020                 56                  ADD.W           #32,D2                  ; Move y position down for next string
+0000107C  43F9 000033FD             57                  LEA             START_L2,A1             ;  line 2
+00001082  4E4F                      58                  TRAP            #15                     
+00001084  0642 0010                 59                  ADD.W           #16,D2                  ; Move y position down for next string
+00001088  43F9 00003404             60                  LEA             START_L3,A1             ;  line 3
+0000108E  4E4F                      61                  TRAP            #15                     
+00001090  0642 0010                 62                  ADD.W           #16,D2                  ; Move y position down for next string
+00001094  43F9 00003435             63                  LEA             START_L4,A1             ;  line 4
+0000109A  4E4F                      64                  TRAP            #15                     
+0000109C  0642 0020                 65                  ADD.W           #32,D2                  ; Move y position down for next string
+000010A0  43F9 0000345E             66                  LEA             START_L5,A1             ; line 5
+000010A6  4E4F                      67                  TRAP            #15                     
+000010A8  0642 0010                 68                  ADD.W           #16,D2                  ; Move y position down for next string
+000010AC  43F9 00003468             69                  LEA             START_L6,A1             ; line 6
+000010B2  4E4F                      70                  TRAP            #15                     
+000010B4  0642 0010                 71                  ADD.W           #16,D2                  ; Move y position down for next string
+000010B8  43F9 00003491             72                  LEA             START_L7,A1             ;  line 7
+000010BE  4E4F                      73                  TRAP            #15                     
+000010C0  0642 0010                 74                  ADD.W           #16,D2                  ; Move y position down for next string
+000010C4  43F9 000034B7             75                  LEA             START_L8,A1             ;  line 8
+000010CA  4E4F                      76                  TRAP            #15
+000010CC  0642 0010                 77                  ADD.W           #16,D2                  ; Move y position down for next string
+000010D0  43F9 000034E8             78                  LEA             START_L9,A1             ;  line 9
+000010D6  4E4F                      79                  TRAP            #15
+000010D8  0642 0010                 80                  ADD.W           #16,D2                  ; Move y position down for next string
+000010DC  43F9 00003509             81                  LEA             START_L10,A1            ;  line 10
+000010E2  4E4F                      82                  TRAP            #15
+000010E4                            83                  
+000010E4                            84                  
+000010E4  0641 004C                 85                  ADD.W           #76,D1                  ; Move x position right to center string
+000010E8  0642 0020                 86                  ADD.W           #32,D2                  ; Move y position down for next string
+000010EC  43F9 00003530             87                  LEA             START_L11,A1            ;  line 11
+000010F2  4E4F                      88                  TRAP            #15
+000010F4  303C 0005                 89                  MOVE            #5,D0                   ; wait input from keyboard
+000010F8  4E4F                      90                  TRAP            #15
+000010FA                            91                                  
+000010FA                            92                  
+000010FA  4E75                      93                  RTS
+000010FC                            94                  
+000010FC                            95                  
+000010FC                            96  PAINT:
+000010FC  103C 0051                 97                  MOVE.B          #81,D0                  ; Change fill color
+00001100  223C 00008080             98                  MOVE.L          #$00008080,D1           ; color
+00001106  4E4F                      99                  TRAP            #15                     
+00001108                           100                  
+00001108  7057                     101                  MOVE.L          #87,D0                  ; draw rectangle 
+0000110A  7200                     102                  MOVE.L          #0,D1                             
+0000110C  7400                     103                  MOVE.L          #0,D2                  
+0000110E  263C 00000280            104                  MOVE.L          #640,D3                 
+00001114  283C 000001E0            105                  MOVE.L          #480,D4                 
+0000111A  4E4F                     106                  TRAP            #15
+0000111C                           107                  
+0000111C  103C 005D                108                  MOVE.B          #93,D0                  ; Change pen width
+00001120  7204                     109                  MOVE.L          #4,D1                   ; width
+00001122  4E4F                     110                  TRAP            #15
+00001124                           111                  
+00001124  103C 0050                112                  MOVE.B          #80,D0                  ; Change pen color
+00001128  223C 001DACE2            113                  MOVE.L          #$001DACE2,D1           ; color (orange)
+0000112E  4E4F                     114                  TRAP            #15
+00001130                           115                  
+00001130  705A                     116                  MOVE.L          #90,D0                  ; draw rectangle (border)
+00001132  7202                     117                  MOVE.L          #2,D1                             
+00001134  7402                     118                  MOVE.L          #2,D2                  
+00001136  263C 0000027E            119                  MOVE.L          #638,D3                 
+0000113C  283C 000001DE            120                  MOVE.L          #478,D4                 
+00001142  4E4F                     121                  TRAP            #15
+00001144                           122                  
+00001144                           123                  
+00001144  103C 005D                124                  MOVE.B          #93,D0                  ; Change PEN width
+00001148  7201                     125                  MOVE.L          #1,D1                   ; width
+0000114A  4E4F                     126                  TRAP            #15
+0000114C                           127                  
+0000114C  103C 0050                128                  MOVE.B          #80,D0                  ; Change PEN color
+00001150  223C 00FFFFFF            129                  MOVE.L          #$00FFFFFF,D1           ; color white
+00001156  4E4F                     130                  TRAP            #15
+00001158                           131  
+00001158                           132  
+00001158  7051                     133                  MOVE.L          #81,D0                  ; Change fill color
+0000115A  223C 000000FF            134                  MOVE.L          #$000000FF,D1           ; color red
+00001160  4E4F                     135                  TRAP            #15
+00001162                           136                  
+00001162                           137                  
+00001162                           138  
+00001162  7057                     139                  MOVE.L          #87,D0                  ; draw p1 body
+00001164  2239 0000322E            140                  MOVE.L          B1_X,D1                 ; set rectangle x position
+0000116A  2439 00003232            141                  MOVE.L          B1_Y,D2                 ; set rectangle y position
+00001170  2639 0000322E            142                  MOVE.L          B1_X,D3
+00001176  2839 00003232            143                  MOVE.L          B1_Y,D4
+0000117C  D6B9 0000323E            144                  ADD.L           B_W,D3                  ; set width
+00001182  D8B9 00003242            145                  ADD.L           B_H,D4                  ; set height
+00001188  4E4F                     146                  TRAP            #15
+0000118A                           147                  
+0000118A                           148                  
+0000118A  7058                     149                  MOVE.L          #88,D0                  ;draw p1 head
+0000118C  2239 0000325A            150                  MOVE.L          HEAD1_X,D1
+00001192  2439 0000325E            151                  MOVE.L          HEAD1_Y,D2
+00001198  2639 0000325A            152                  MOVE.L          HEAD1_X,D3
+0000119E  2839 0000325E            153                  MOVE.L          HEAD1_Y,D4
+000011A4  D6B9 00003256            154                  ADD.L           HAND_DI,D3
+000011AA  D8B9 00003256            155                  ADD.L           HAND_DI,D4
+000011B0  4E4F                     156                  TRAP            #15
+000011B2                           157  
+000011B2                           158  
+000011B2                           159                  IF.L IS_INVERSED <EQ> #0 THEN           ;normal distribution
+000011C0                           160                  
+000011C0                           161                  
+000011C0  7058                     162                  MOVE.L          #88,D0                  ;draw p1 right box
+000011C2  2239 00003246            163                  MOVE.L          RH1_X,D1
+000011C8  2439 0000324A            164                  MOVE.L          RH1_Y,D2
+000011CE  2639 00003246            165                  MOVE.L          RH1_X,D3
+000011D4  2839 0000324A            166                  MOVE.L          RH1_Y,D4
+000011DA  D6B9 00003256            167                  ADD.L           HAND_DI,D3
+000011E0  D8B9 00003256            168                  ADD.L           HAND_DI,D4
+000011E6  4E4F                     169                  TRAP            #15
+000011E8                           170                  
+000011E8                           171                  
+000011E8  7058                     172                  MOVE.L          #88,D0                  ;draw p1 left box
+000011EA  2239 0000326A            173                  MOVE.L          LH1_X,D1
+000011F0  2439 0000326E            174                  MOVE.L          LH1_Y,D2
+000011F6  2639 0000326A            175                  MOVE.L          LH1_X,D3
+000011FC  2839 0000326E            176                  MOVE.L          LH1_Y,D4
+00001202  D6B9 00003256            177                  ADD.L           HAND_DI,D3
+00001208  D8B9 00003256            178                  ADD.L           HAND_DI,D4
+0000120E  4E4F                     179                  TRAP            #15
+00001210                           180  
+00001210                           181  
+00001210  7057                     182                  MOVE.L          #87,D0                  ;draw p1 right hand
+00001212  2239 0000327A            183                  MOVE.L          BHR1_X,D1                   ; set rectangle x position
+00001218  2439 0000327E            184                  MOVE.L          BHR1_Y,D2                   ; set rectangle y position
+0000121E  2639 0000327A            185                  MOVE.L          BHR1_X,D3
+00001224  2839 0000327E            186                  MOVE.L          BHR1_Y,D4
+0000122A  D6B9 0000328A            187                  ADD.L           BHR1_W,D3
+00001230  D8B9 0000329A            188                  ADD.L           BH_H,D4
+00001236  4E4F                     189                  TRAP            #15
+00001238                           190                  
+00001238                           191                  
+00001238  7057                     192                  MOVE.L          #87,D0                  ;draw p1 left hand
+0000123A  2239 00003350            193                  MOVE.L          BHL1_X,D1                   ; set rectangle x position
+00001240  2439 00003354            194                  MOVE.L          BHL1_Y,D2                   ; set rectangle y position
+00001246  2639 00003350            195                  MOVE.L          BHL1_X,D3
+0000124C  2839 00003354            196                  MOVE.L          BHL1_Y,D4
+00001252  D6B9 0000328E            197                  ADD.L           BHL1_W,D3
+00001258  D8B9 0000329A            198                  ADD.L           BH_H,D4
+0000125E  4E4F                     199                  TRAP            #15
+00001260                           200                  
+00001260                           201                  ELSE                                    ; inversed distribution
+00001264                           202                  
+00001264                           203                  
+00001264  7057                     204                  MOVE.L          #87,D0                  ;draw p1 right hand
+00001266  2239 0000327A            205                  MOVE.L          BHR1_X,D1                   ; set rectangle x position
+0000126C  2439 0000327E            206                  MOVE.L          BHR1_Y,D2                   ; set rectangle y position
+00001272  2839 0000327E            207                  MOVE.L          BHR1_Y,D4
+00001278  D2B9 0000323E            208                  ADD.L           B_W,D1
+0000127E  0481 00000023            209                  SUB.L           #35,D1
+00001284  2601                     210                  MOVE.L          D1,D3
+00001286  D6B9 0000328A            211                  ADD.L           BHR1_W,D3
+0000128C  D8B9 0000329A            212                  ADD.L           BH_H,D4
+00001292  4E4F                     213                  TRAP            #15
+00001294                           214                  
+00001294                           215                  
+00001294  7057                     216                  MOVE.L          #87,D0                  ;draw p1 left hand
+00001296  2239 00003350            217                  MOVE.L          BHL1_X,D1                   ; set rectangle x position
+0000129C  2439 00003354            218                  MOVE.L          BHL1_Y,D2                   ; set rectangle y position
+000012A2  2839 00003354            219                  MOVE.L          BHL1_Y,D4
+000012A8  D2B9 0000323E            220                  ADD.L           B_W,D1
+000012AE  0481 00000023            221                  SUB.L           #35,D1
+000012B4  2601                     222                  MOVE.L          D1,D3
+000012B6  D6B9 0000328E            223                  ADD.L           BHL1_W,D3
+000012BC                           224  
+000012BC  D8B9 0000329A            225                  ADD.L           BH_H,D4
+000012C2  4E4F                     226                  TRAP            #15
+000012C4                           227                  
+000012C4                           228                  
+000012C4  7058                     229                  MOVE.L          #88,D0                  ;draw p1 right box
+000012C6  2239 00003246            230                  MOVE.L          RH1_X,D1
+000012CC  2439 0000324A            231                  MOVE.L          RH1_Y,D2
+000012D2  2839 0000324A            232                  MOVE.L          RH1_Y,D4
+000012D8  D8B9 00003256            233                  ADD.L           HAND_DI,D4
+000012DE  92B9 0000328A            234                  SUB.L           BHR1_W,D1
+000012E4  92B9 0000328A            235                  SUB.L           BHR1_W,D1
+000012EA  92B9 0000323E            236                  SUB.L           B_W,D1
+000012F0  2601                     237                  MOVE.L          D1,D3
+000012F2  D6B9 00003256            238                  ADD.L           HAND_DI,D3
+000012F8  4E4F                     239                  TRAP            #15
+000012FA                           240                  
+000012FA                           241                  
+000012FA  7058                     242                  MOVE.L          #88,D0                  ;draw p1 left box
+000012FC  2239 0000326A            243                  MOVE.L          LH1_X,D1
+00001302  2439 0000326E            244                  MOVE.L          LH1_Y,D2
+00001308  2839 0000326E            245                  MOVE.L          LH1_Y,D4
+0000130E  D8B9 00003256            246                  ADD.L           HAND_DI,D4
+00001314  92B9 0000328E            247                  SUB.L           BHL1_W,D1
+0000131A  92B9 0000328E            248                  SUB.L           BHL1_W,D1
+00001320  92B9 0000323E            249                  SUB.L           B_W,D1
+00001326  2601                     250                  MOVE.L          D1,D3
+00001328  D6B9 00003256            251                  ADD.L           HAND_DI,D3
+0000132E  4E4F                     252                  TRAP            #15
+00001330                           253                  
+00001330                           254                  ENDI
+00001330                           255  
+00001330                           256  
+00001330  7051                     257                  MOVE.L          #81,D0
+00001332  223C 00FF0000            258                  MOVE.L          #$00FF0000,D1
+00001338  4E4F                     259                  TRAP            #15
+0000133A                           260                  
+0000133A                           261                  
+0000133A  7057                     262                  MOVE.L          #87,D0                  ; draw p2 body
+0000133C  2239 00003236            263                  MOVE.L          B2_X,D1                 ; set rectangle x position
+00001342  2439 0000323A            264                  MOVE.L          B2_Y,D2                 ; set rectangle y position
+00001348  2639 00003236            265                  MOVE.L          B2_X,D3
+0000134E  2839 0000323A            266                  MOVE.L          B2_Y,D4
+00001354  D6B9 0000323E            267                  ADD.L           B_W,D3
+0000135A  D8B9 00003242            268                  ADD.L           B_H,D4
+00001360  4E4F                     269                  TRAP            #15
+00001362                           270  
+00001362  7058                     271                  MOVE.L          #88,D0                  ;draw p2 head
+00001364  2239 00003262            272                  MOVE.L          HEAD2_X,D1
+0000136A  2439 00003266            273                  MOVE.L          HEAD2_Y,D2
+00001370  2639 00003262            274                  MOVE.L          HEAD2_X,D3
+00001376  2839 00003266            275                  MOVE.L          HEAD2_Y,D4
+0000137C  D6B9 00003256            276                  ADD.L           HAND_DI,D3
+00001382  D8B9 00003256            277                  ADD.L           HAND_DI,D4
+00001388  4E4F                     278                  TRAP            #15
+0000138A                           279                  
+0000138A                           280                  
+0000138A                           281                  IF.L IS_INVERSED <EQ> #0 THEN           ; normal distribution
+00001398                           282  
+00001398                           283                  
+00001398                           284                  
+00001398  7058                     285                  MOVE.L          #88,D0                  ;draw p2 right box
+0000139A  2239 0000324E            286                  MOVE.L          RH2_X,D1
+000013A0  2439 00003252            287                  MOVE.L          RH2_Y,D2
+000013A6  2639 0000324E            288                  MOVE.L          RH2_X,D3
+000013AC  2839 00003252            289                  MOVE.L          RH2_Y,D4
+000013B2  D6B9 00003256            290                  ADD.L           HAND_DI,D3
+000013B8  D8B9 00003256            291                  ADD.L           HAND_DI,D4
+000013BE  4E4F                     292                  TRAP            #15
+000013C0                           293                  
+000013C0                           294  
+000013C0                           295  
+000013C0  7058                     296                  MOVE.L          #88,D0                  ;draw p2 left box
+000013C2  2239 00003272            297                  MOVE.L          LH2_X,D1
+000013C8  2439 00003276            298                  MOVE.L          LH2_Y,D2
+000013CE  2639 00003272            299                  MOVE.L          LH2_X,D3
+000013D4  2839 00003276            300                  MOVE.L          LH2_Y,D4
+000013DA  D6B9 00003256            301                  ADD.L           HAND_DI,D3
+000013E0  D8B9 00003256            302                  ADD.L           HAND_DI,D4
+000013E6  4E4F                     303                  TRAP            #15
+000013E8                           304  
+000013E8                           305  
+000013E8  7057                     306                  MOVE.L          #87,D0                  ; draw p2 right hand
+000013EA  2239 00003282            307                  MOVE.L          BHR2_X,D1                   ; set rectangle x position
+000013F0  2439 00003286            308                  MOVE.L          BHR2_Y,D2                   ; set rectangle y position
+000013F6  2639 00003282            309                  MOVE.L          BHR2_X,D3
+000013FC  2839 00003286            310                  MOVE.L          BHR2_Y,D4
+00001402  D6B9 00003292            311                  ADD.L           BHR2_W,D3
+00001408  D8B9 0000329A            312                  ADD.L           BH_H,D4
+0000140E  4E4F                     313                  TRAP            #15
+00001410                           314                  
+00001410                           315                  
+00001410  7057                     316                  MOVE.L          #87,D0                  ; draw p2 left hand
+00001412  2239 00003358            317                  MOVE.L          BHL2_X,D1                   ; set rectangle x position
+00001418  2439 0000335C            318                  MOVE.L          BHL2_Y,D2                   ; set rectangle y position
+0000141E  2639 00003358            319                  MOVE.L          BHL2_X,D3
+00001424  2839 0000335C            320                  MOVE.L          BHL2_Y,D4
+0000142A  D6B9 00003296            321                  ADD.L           BHL2_W,D3
+00001430  D8B9 0000329A            322                  ADD.L           BH_H,D4
+00001436  4E4F                     323                  TRAP            #15
+00001438                           324                  
+00001438                           325                  
+00001438                           326                  ELSE                                    ; inversed distribution
+0000143C                           327                  
+0000143C                           328                  
+0000143C                           329                  
+0000143C  7057                     330                  MOVE.L          #87,D0                  ; draw p2 right hand
+0000143E  2239 00003282            331                  MOVE.L          BHR2_X,D1                   ; set rectangle x position
+00001444  2439 00003286            332                  MOVE.L          BHR2_Y,D2                   ; set rectangle y position
+0000144A  2639 00003282            333                  MOVE.L          BHR2_X,D3
+00001450  2839 00003286            334                  MOVE.L          BHR2_Y,D4
+00001456  D6B9 00003292            335                  ADD.L           BHR2_W,D3
+0000145C  D8B9 0000329A            336                  ADD.L           BH_H,D4
+00001462  D2B9 00003292            337                  ADD.L           BHR2_W,D1
+00001468  D6B9 00003292            338                  ADD.L           BHR2_W,D3
+0000146E  92B9 0000323E            339                  SUB.L           B_W,D1
+00001474  4E4F                     340                  TRAP            #15
+00001476                           341  
+00001476                           342  
+00001476                           343  
+00001476                           344                  
+00001476                           345                  
+00001476  7057                     346                  MOVE.L          #87,D0                  ; draw p2 left hand
+00001478  2239 00003358            347                  MOVE.L          BHL2_X,D1                   ; set rectangle x position
+0000147E  2439 0000335C            348                  MOVE.L          BHL2_Y,D2                   ; set rectangle y position
+00001484  2639 00003358            349                  MOVE.L          BHL2_X,D3
+0000148A  2839 0000335C            350                  MOVE.L          BHL2_Y,D4
+00001490  D6B9 00003296            351                  ADD.L           BHL2_W,D3
+00001496  D8B9 0000329A            352                  ADD.L           BH_H,D4
+0000149C  D2B9 00003296            353                  ADD.L           BHL2_W,D1
+000014A2  D6B9 00003296            354                  ADD.L           BHL2_W,D3
+000014A8  92B9 0000323E            355                  SUB.L           B_W,D1
+000014AE  4E4F                     356                  TRAP            #15
+000014B0                           357  
+000014B0                           358  
+000014B0                           359                  
+000014B0                           360                  
+000014B0  7058                     361                  MOVE.L          #88,D0                  ;draw p2 right box
+000014B2  2239 0000324E            362                  MOVE.L          RH2_X,D1
+000014B8  2439 00003252            363                  MOVE.L          RH2_Y,D2
+000014BE  2839 00003252            364                  MOVE.L          RH2_Y,D4
+000014C4  D8B9 00003256            365                  ADD.L           HAND_DI,D4
+000014CA  D2B9 00003292            366                  ADD.L           BHR2_W,D1
+000014D0  D2B9 00003292            367                  ADD.L           BHR2_W,D1
+000014D6  D2B9 0000323E            368                  ADD.L           B_W,D1
+000014DC  2601                     369                  MOVE.L          D1,D3
+000014DE  D6B9 00003256            370                  ADD.L           HAND_DI,D3
+000014E4  4E4F                     371                  TRAP            #15
+000014E6                           372                  
+000014E6                           373                  
+000014E6  7058                     374                  MOVE.L          #88,D0                  ;draw p2 left box
+000014E8  2239 00003272            375                  MOVE.L          LH2_X,D1
+000014EE  2439 00003276            376                  MOVE.L          LH2_Y,D2
+000014F4  2839 00003276            377                  MOVE.L          LH2_Y,D4
+000014FA  D8B9 00003256            378                  ADD.L           HAND_DI,D4
+00001500  D2B9 00003296            379                  ADD.L           BHL2_W,D1
+00001506  D2B9 00003296            380                  ADD.L           BHL2_W,D1
+0000150C  D2B9 0000323E            381                  ADD.L           B_W,D1
+00001512  2601                     382                  MOVE.L          D1,D3
+00001514  D6B9 00003256            383                  ADD.L           HAND_DI,D3
+0000151A  4E4F                     384                  TRAP            #15
+0000151C                           385  
+0000151C                           386                  
+0000151C                           387                  ENDI
+0000151C                           388  
+0000151C                           389                  *HEALTH
+0000151C                           390                  
+0000151C  103C 0051                391                  MOVE.B          #81,D0                  ; Change fill color
+00001520  223C 000000FF            392                  MOVE.L          #$000000FF,D1           ; color RED
+00001526  4E4F                     393                  TRAP            #15                     
+00001528                           394                  
+00001528  7057                     395                  MOVE.L          #87,D0                  ; draw rectangle backgound of health
+0000152A  7212                     396                  MOVE.L          #18,D1                             
+0000152C  7412                     397                  MOVE.L          #18,D2                  
+0000152E  263C 0000012E            398                  MOVE.L          #302,D3                 
+00001534  7825                     399                  MOVE.L          #37,D4                 
+00001536  4E4F                     400                  TRAP            #15
+00001538                           401                  
+00001538  103C 0051                402                  MOVE.B          #81,D0                  ; Change fill color
+0000153C  223C 0000FF00            403                  MOVE.L          #$0000FF00,D1           ; color GREEN
+00001542  4E4F                     404                  TRAP            #15                     
+00001544                           405                  
+00001544  7057                     406                  MOVE.L          #87,D0                  ; draw rectangle of health
+00001546  7214                     407                  MOVE.L          #20,D1
+00001548  7414                     408                  MOVE.L          #20,D2
+0000154A  2639 00003348            409                  MOVE.L          H1_X,D3
+00001550  7823                     410                  MOVE.L          #35,D4
+00001552  4E4F                     411                  TRAP            #15
+00001554                           412                  
+00001554  103C 0051                413                  MOVE.B          #81,D0                  ; Change fill color
+00001558  223C 00FF0000            414                  MOVE.L          #$00FF0000,D1           ; color BLUE
+0000155E  4E4F                     415                  TRAP            #15                     
+00001560                           416                  
+00001560  7057                     417                  MOVE.L          #87,D0                  ; draw rectangle backgound of health
+00001562  223C 00000152            418                  MOVE.L          #338,D1                             
+00001568  7412                     419                  MOVE.L          #18,D2                  
+0000156A  263C 0000026E            420                  MOVE.L          #622,D3                 
+00001570  7825                     421                  MOVE.L          #37,D4                 
+00001572  4E4F                     422                  TRAP            #15
+00001574                           423  
+00001574                           424  
+00001574  103C 0051                425                  MOVE.B          #81,D0                  ; Change fill color
+00001578  223C 0000FF00            426                  MOVE.L          #$0000FF00,D1           ; color GREEN
+0000157E  4E4F                     427                  TRAP            #15                     
+00001580                           428                  
+00001580  7057                     429                  MOVE.L          #87,D0                  ; draw rectangle of health
+00001582  2239 0000334C            430                  MOVE.L          H2_X,D1
+00001588  7414                     431                  MOVE.L          #20,D2
+0000158A  263C 0000026C            432                  MOVE.L          #620,D3
+00001590  7823                     433                  MOVE.L          #35,D4
+00001592  4E4F                     434                  TRAP            #15
+00001594                           435                  
+00001594  103C 0051                436                  MOVE.B          #81,D0                  ; Change fill color
+00001598  223C 00008080            437                  MOVE.L          #$00008080,D1           ; color olive
+0000159E  4E4F                     438                  TRAP            #15                
+000015A0                           439                  
+000015A0  303C 0015                440                  MOVE            #21,D0                  ; Task 21 changes font size
+000015A4  223C 00FFFFFF            441                  MOVE.L          #$00FFFFFF,D1           ; WHITE color
+000015AA  243C 00080000            442                  MOVE.L          #$00080000,D2           ; Lucidia Sans Typewriter size=18
+000015B0  4E4F                     443                  TRAP            #15 
+000015B2                           444                  
+000015B2  43F9 00003334            445                  LEA             P1,A1
+000015B8  705F                     446                  MOVE.L          #95,D0                  ; Draw string located at A1
+000015BA  7214                     447                  MOVE.L          #20,D1                  ;  x position of string
+000015BC  7428                     448                  MOVE.L          #40,D2                  ;  y position of string
+000015BE  4E4F                     449                  TRAP            #15
+000015C0                           450                  
+000015C0  43F9 0000333E            451                  LEA             P2,A1
+000015C6  705F                     452                  MOVE.L          #95,D0                  ; Draw string located at A1
+000015C8  223C 00000230            453                  MOVE.L          #560,D1                 ;  x position of string
+000015CE  7428                     454                  MOVE.L          #40,D2                  ;  y position of string
+000015D0  4E4F                     455                  TRAP            #15
+000015D2                           456  
+000015D2  103C 0051                457                  MOVE.B          #81,D0                  ; Change fill color
+000015D6  223C 0000FF00            458                  MOVE.L          #$0000FF00,D1           ; color
+000015DC  4E4F                     459                  TRAP            #15                
+000015DE                           460  
+000015DE  303C 0015                461                  MOVE            #21,D0                  ; Task 21 changes font size
+000015E2  223C 000000FF            462                  MOVE.L          #$000000FF,D1           ; RED color
+000015E8  243C 00060000            463                  MOVE.L          #$00060000,D2           ; size=6
+000015EE  4E4F                     464                  TRAP            #15
+000015F0                           465  
+000015F0  705F                     466                  MOVE.L          #95,D0                  ; health p1 pourcentage 
+000015F2                           467                  IF.L P2_SCORE <EQ> #0 THEN
+00001600  43F9 000033B6            468                  LEA             N100,A1
+00001606  7219                     469                  MOVE.L          #25,D1                  ;  x position of string
+00001608  7415                     470                  MOVE.L          #21,D2                  ;  y position of string
+0000160A  4E4F                     471                  TRAP            #15
+0000160C                           472                  ENDI
+0000160C                           473                  IF.L P2_SCORE <EQ> #1 THEN
+0000161A  43F9 000033BA            474                  LEA             N95,A1
+00001620  7219                     475                  MOVE.L          #25,D1                  ;  x position of string
+00001622  7415                     476                  MOVE.L          #21,D2                  ;  y position of string
+00001624  4E4F                     477                  TRAP            #15
+00001626                           478                  ENDI
+00001626                           479                  IF.L P2_SCORE <EQ> #2 THEN
+00001634  43F9 000033BD            480                  LEA             N90,A1
+0000163A  7219                     481                  MOVE.L          #25,D1                  ;  x position of string
+0000163C  7415                     482                  MOVE.L          #21,D2                  ;  y position of string
+0000163E  4E4F                     483                  TRAP            #15
+00001640                           484                  ENDI
+00001640                           485                  IF.L P2_SCORE <EQ> #3 THEN
+0000164E  43F9 000033C0            486                  LEA             N85,A1
+00001654  7219                     487                  MOVE.L          #25,D1                  ;  x position of string
+00001656  7415                     488                  MOVE.L          #21,D2                  ;  y position of string
+00001658  4E4F                     489                  TRAP            #15
+0000165A                           490                  ENDI
+0000165A                           491                  IF.L P2_SCORE <EQ> #4 THEN
+00001668  43F9 000033C3            492                  LEA             N80,A1
+0000166E  7219                     493                  MOVE.L          #25,D1                  ;  x position of string
+00001670  7415                     494                  MOVE.L          #21,D2                  ;  y position of string
+00001672  4E4F                     495                  TRAP            #15
+00001674                           496                  ENDI
+00001674                           497                  IF.L P2_SCORE <EQ> #5 THEN
+00001682  43F9 000033C6            498                  LEA             N75,A1
+00001688  7219                     499                  MOVE.L          #25,D1                  ;  x position of string
+0000168A  7415                     500                  MOVE.L          #21,D2                  ;  y position of string
+0000168C  4E4F                     501                  TRAP            #15
+0000168E                           502                  ENDI
+0000168E                           503                  IF.L P2_SCORE <EQ> #6 THEN
+0000169C  43F9 000033C9            504                  LEA             N70,A1
+000016A2  7219                     505                  MOVE.L          #25,D1                  ;  x position of string
+000016A4  7415                     506                  MOVE.L          #21,D2                  ;  y position of string
+000016A6  4E4F                     507                  TRAP            #15
+000016A8                           508                  ENDI
+000016A8                           509                  IF.L P2_SCORE <EQ> #7 THEN
+000016B6  43F9 000033CC            510                  LEA             N65,A1
+000016BC  7219                     511                  MOVE.L          #25,D1                  ;  x position of string
+000016BE  7415                     512                  MOVE.L          #21,D2                  ;  y position of string
+000016C0  4E4F                     513                  TRAP            #15
+000016C2                           514                  ENDI
+000016C2                           515                  IF.L P2_SCORE <EQ> #8 THEN
+000016D0  43F9 000033CF            516                  LEA             N60,A1
+000016D6  7219                     517                  MOVE.L          #25,D1                  ;  x position of string
+000016D8  7415                     518                  MOVE.L          #21,D2                  ;  y position of string
+000016DA  4E4F                     519                  TRAP            #15
+000016DC                           520                  ENDI
+000016DC                           521                  IF.L P2_SCORE <EQ> #9 THEN
+000016EA  43F9 000033D2            522                  LEA             N55,A1
+000016F0  7219                     523                  MOVE.L          #25,D1                  ;  x position of string
+000016F2  7415                     524                  MOVE.L          #21,D2                  ;  y position of string
+000016F4  4E4F                     525                  TRAP            #15
+000016F6                           526                  ENDI
+000016F6                           527                  IF.L P2_SCORE <EQ> #10 THEN
+00001704  43F9 000033D5            528                  LEA             N50,A1
+0000170A  7219                     529                  MOVE.L          #25,D1                  ;  x position of string
+0000170C  7415                     530                  MOVE.L          #21,D2                  ;  y position of string
+0000170E  4E4F                     531                  TRAP            #15
+00001710                           532                  ENDI
+00001710                           533                  IF.L P2_SCORE <EQ> #11 THEN
+0000171E  43F9 000033D8            534                  LEA             N45,A1
+00001724  7219                     535                  MOVE.L          #25,D1                  ;  x position of string
+00001726  7415                     536                  MOVE.L          #21,D2                  ;  y position of string
+00001728  4E4F                     537                  TRAP            #15
+0000172A                           538                  ENDI
+0000172A                           539                  IF.L P2_SCORE <EQ> #12 THEN
+00001738  43F9 000033DB            540                  LEA             N40,A1
+0000173E  7219                     541                  MOVE.L          #25,D1                  ;  x position of string
+00001740  7415                     542                  MOVE.L          #21,D2                  ;  y position of string
+00001742  4E4F                     543                  TRAP            #15
+00001744                           544                  ENDI
+00001744                           545                  IF.L P2_SCORE <EQ> #13 THEN
+00001752  43F9 000033DE            546                  LEA             N35,A1
+00001758  7219                     547                  MOVE.L          #25,D1                  ;  x position of string
+0000175A  7415                     548                  MOVE.L          #21,D2                  ;  y position of string
+0000175C  4E4F                     549                  TRAP            #15
+0000175E                           550                  ENDI
+0000175E                           551                  IF.L P2_SCORE <EQ> #14 THEN
+0000176C  43F9 000033E1            552                  LEA             N30,A1
+00001772  7219                     553                  MOVE.L          #25,D1                  ;  x position of string
+00001774  7415                     554                  MOVE.L          #21,D2                  ;  y position of string
+00001776  4E4F                     555                  TRAP            #15
+00001778                           556                  ENDI
+00001778                           557                  IF.L P2_SCORE <EQ> #15 THEN
+00001786  43F9 000033E4            558                  LEA             N25,A1
+0000178C  7219                     559                  MOVE.L          #25,D1                  ;  x position of string
+0000178E  7415                     560                  MOVE.L          #21,D2                  ;  y position of string
+00001790  4E4F                     561                  TRAP            #15
+00001792                           562                  ENDI
+00001792                           563                  IF.L P2_SCORE <EQ> #16 THEN
+000017A0  43F9 000033E7            564                  LEA             N20,A1
+000017A6  7219                     565                  MOVE.L          #25,D1                  ;  x position of string
+000017A8  7415                     566                  MOVE.L          #21,D2                  ;  y position of string
+000017AA  4E4F                     567                  TRAP            #15
+000017AC                           568                  ENDI
+000017AC                           569                  IF.L P2_SCORE <EQ> #17 THEN
+000017BA  43F9 000033EA            570                  LEA             N15,A1
+000017C0  7219                     571                  MOVE.L          #25,D1                  ;  x position of string
+000017C2  7415                     572                  MOVE.L          #21,D2                  ;  y position of string
+000017C4  4E4F                     573                  TRAP            #15
+000017C6                           574                  ENDI
+000017C6                           575                  IF.L P2_SCORE <EQ> #18 THEN
+000017D4  43F9 000033ED            576                  LEA             N10,A1
+000017DA  7219                     577                  MOVE.L          #25,D1                  ;  x position of string
+000017DC  7415                     578                  MOVE.L          #21,D2                  ;  y position of string
+000017DE  4E4F                     579                  TRAP            #15
+000017E0                           580                  ENDI
+000017E0                           581                  IF.L P2_SCORE <EQ> #19 THEN
+000017EE  43F9 000033F0            582                  LEA             N5,A1
+000017F4  7219                     583                  MOVE.L          #25,D1                  ;  x position of string
+000017F6  7415                     584                  MOVE.L          #21,D2                  ;  y position of string
+000017F8  4E4F                     585                  TRAP            #15
+000017FA                           586                  ENDI
+000017FA                           587                  
+000017FA  303C 0015                588                  MOVE            #21,D0                  ; Task 21 changes font size
+000017FE  223C 00FF0000            589                  MOVE.L          #$00FF0000,D1           ; BLUE color
+00001804  243C 00060000            590                  MOVE.L          #$00060000,D2           ; Lucidia Sans Typewriter size=18
+0000180A  4E4F                     591                  TRAP            #15 
+0000180C                           592                  
+0000180C  705F                     593                  MOVE.L          #95,D0                  ; Draw p2 health pourcentage
+0000180E                           594  
+0000180E                           595                  IF.L P1_SCORE <EQ> #0 THEN
+0000181C  43F9 000033B6            596                  LEA             N100,A1
+00001822  223C 0000024E            597                  MOVE.L          #590,D1                 ;  x position of string
+00001828  7415                     598                  MOVE.L          #21,D2                  ;  y position of string
+0000182A  4E4F                     599                  TRAP            #15
+0000182C                           600                  ENDI
+0000182C                           601                  IF.L P1_SCORE <EQ> #1 THEN
+0000183A  43F9 000033BA            602                  LEA             N95,A1
+00001840  223C 00000258            603                  MOVE.L          #600,D1                 ;  x position of string
+00001846  7415                     604                  MOVE.L          #21,D2                  ;  y position of string
+00001848  4E4F                     605                  TRAP            #15
+0000184A                           606                  ENDI
+0000184A                           607                  IF.L P1_SCORE <EQ> #2 THEN
+00001858  43F9 000033BD            608                  LEA             N90,A1
+0000185E  223C 00000258            609                  MOVE.L          #600,D1                 ;  x position of string
+00001864  7415                     610                  MOVE.L          #21,D2                  ;  y position of string
+00001866  4E4F                     611                  TRAP            #15
+00001868                           612                  ENDI
+00001868                           613                  IF.L P1_SCORE <EQ> #3 THEN
+00001876  43F9 000033C0            614                  LEA             N85,A1
+0000187C  223C 00000258            615                  MOVE.L          #600,D1                 ;  x position of string
+00001882  7415                     616                  MOVE.L          #21,D2                  ;  y position of string
+00001884  4E4F                     617                  TRAP            #15
+00001886                           618                  ENDI
+00001886                           619                  IF.L P1_SCORE <EQ> #4 THEN
+00001894  43F9 000033C3            620                  LEA             N80,A1
+0000189A  223C 00000258            621                  MOVE.L          #600,D1                 ;  x position of string
+000018A0  7415                     622                  MOVE.L          #21,D2                  ;  y position of string
+000018A2  4E4F                     623                  TRAP            #15
+000018A4                           624                  ENDI
+000018A4                           625                  IF.L P1_SCORE <EQ> #5 THEN
+000018B2  43F9 000033C6            626                  LEA             N75,A1
+000018B8  223C 00000258            627                  MOVE.L          #600,D1                 ;  x position of string
+000018BE  7415                     628                  MOVE.L          #21,D2                  ;  y position of string
+000018C0  4E4F                     629                  TRAP            #15
+000018C2                           630                  ENDI
+000018C2                           631                  IF.L P1_SCORE <EQ> #6 THEN
+000018D0  43F9 000033C9            632                  LEA             N70,A1
+000018D6  223C 00000258            633                  MOVE.L          #600,D1                 ;  x position of string
+000018DC  7415                     634                  MOVE.L          #21,D2                  ;  y position of string
+000018DE  4E4F                     635                  TRAP            #15
+000018E0                           636                  ENDI
+000018E0                           637                  IF.L P1_SCORE <EQ> #7 THEN
+000018EE  43F9 000033CC            638                  LEA             N65,A1
+000018F4  223C 00000258            639                  MOVE.L          #600,D1                 ;  x position of string
+000018FA  7415                     640                  MOVE.L          #21,D2                  ;  y position of string
+000018FC  4E4F                     641                  TRAP            #15
+000018FE                           642                  ENDI
+000018FE                           643                  IF.L P1_SCORE <EQ> #8 THEN
+0000190C  43F9 000033CF            644                  LEA             N60,A1
+00001912  223C 00000258            645                  MOVE.L          #600,D1                 ;  x position of string
+00001918  7415                     646                  MOVE.L          #21,D2                  ;  y position of string
+0000191A  4E4F                     647                  TRAP            #15
+0000191C                           648                  ENDI
+0000191C                           649                  IF.L P1_SCORE <EQ> #9 THEN
+0000192A  43F9 000033D2            650                  LEA             N55,A1
+00001930  223C 00000258            651                  MOVE.L          #600,D1                 ;  x position of string
+00001936  7415                     652                  MOVE.L          #21,D2                  ;  y position of string
+00001938  4E4F                     653                  TRAP            #15
+0000193A                           654                  ENDI
+0000193A                           655                  IF.L P1_SCORE <EQ> #10 THEN
+00001948  43F9 000033D5            656                  LEA             N50,A1
+0000194E  223C 00000258            657                  MOVE.L          #600,D1                 ;  x position of string
+00001954  7415                     658                  MOVE.L          #21,D2                  ;  y position of string
+00001956  4E4F                     659                  TRAP            #15
+00001958                           660                  ENDI
+00001958                           661                  IF.L P1_SCORE <EQ> #11 THEN
+00001966  43F9 000033D8            662                  LEA             N45,A1
+0000196C  223C 00000258            663                  MOVE.L          #600,D1                 ;  x position of string
+00001972  7415                     664                  MOVE.L          #21,D2                  ;  y position of string
+00001974  4E4F                     665                  TRAP            #15
+00001976                           666                  ENDI
+00001976                           667                  IF.L P1_SCORE <EQ> #12 THEN
+00001984  43F9 000033DB            668                  LEA             N40,A1
+0000198A  223C 00000258            669                  MOVE.L          #600,D1                 ;  x position of string
+00001990  7415                     670                  MOVE.L          #21,D2                  ;  y position of string
+00001992  4E4F                     671                  TRAP            #15
+00001994                           672                  ENDI
+00001994                           673                  IF.L P1_SCORE <EQ> #13 THEN
+000019A2  43F9 000033DE            674                  LEA             N35,A1
+000019A8  223C 00000258            675                  MOVE.L          #600,D1                 ;  x position of string
+000019AE  7415                     676                  MOVE.L          #21,D2                  ;  y position of string
+000019B0  4E4F                     677                  TRAP            #15
+000019B2                           678                  ENDI
+000019B2                           679                  IF.L P1_SCORE <EQ> #14 THEN
+000019C0  43F9 000033E1            680                  LEA             N30,A1
+000019C6  223C 00000258            681                  MOVE.L          #600,D1                 ;  x position of string
+000019CC  7415                     682                  MOVE.L          #21,D2                  ;  y position of string
+000019CE  4E4F                     683                  TRAP            #15
+000019D0                           684                  ENDI
+000019D0                           685                  IF.L P1_SCORE <EQ> #15 THEN
+000019DE  43F9 000033E4            686                  LEA             N25,A1
+000019E4  223C 00000258            687                  MOVE.L          #600,D1                 ;  x position of string
+000019EA  7415                     688                  MOVE.L          #21,D2                  ;  y position of string
+000019EC  4E4F                     689                  TRAP            #15
+000019EE                           690                  ENDI
+000019EE                           691                  IF.L P1_SCORE <EQ> #16 THEN
+000019FC  43F9 000033E7            692                  LEA             N20,A1
+00001A02  223C 00000258            693                  MOVE.L          #600,D1                 ;  x position of string
+00001A08  7415                     694                  MOVE.L          #21,D2                  ;  y position of string
+00001A0A  4E4F                     695                  TRAP            #15
+00001A0C                           696                  ENDI
+00001A0C                           697                  IF.L P1_SCORE <EQ> #17 THEN
+00001A1A  43F9 000033EA            698                  LEA             N15,A1
+00001A20  223C 00000258            699                  MOVE.L          #600,D1                 ;  x position of string
+00001A26  7415                     700                  MOVE.L          #21,D2                  ;  y position of string
+00001A28  4E4F                     701                  TRAP            #15
+00001A2A                           702                  ENDI
+00001A2A                           703                  IF.L P1_SCORE <EQ> #18 THEN
+00001A38  43F9 000033ED            704                  LEA             N10,A1
+00001A3E  223C 00000258            705                  MOVE.L          #600,D1                 ;  x position of string
+00001A44  7415                     706                  MOVE.L          #21,D2                  ;  y position of string
+00001A46  4E4F                     707                  TRAP            #15
+00001A48                           708                  ENDI
+00001A48                           709                  IF.L P1_SCORE <EQ> #19 THEN
+00001A56  43F9 000033F0            710                  LEA             N5,A1
+00001A5C  223C 00000262            711                  MOVE.L          #610,D1                 ;  x position of string
+00001A62  7415                     712                  MOVE.L          #21,D2                  ;  y position of string
+00001A64  4E4F                     713                  TRAP            #15
+00001A66                           714                  ENDI
+00001A66                           715                  
+00001A66                           716  
+00001A66  103C 0051                717                  MOVE.B          #81,D0                  ; Change fill color
+00001A6A  223C 00008080            718                  MOVE.L          #$00008080,D1           ; color olive
+00001A70  4E4F                     719                  TRAP            #15  
+00001A72  303C 0015                720                  MOVE            #21,D0                  ; Task 21 changes font size
+00001A76  223C 00FFFFFF            721                  MOVE.L          #$00FFFFFF,D1           ; WHITE color
+00001A7C  243C 00080000            722                  MOVE.L          #$00080000,D2           ; size=8
+00001A82  4E4F                     723                  TRAP            #15
+00001A84  705F                     724                  MOVE.L          #95,D0                  ; Draw round number
+00001A86                           725                  IF.L P1_ROUND <EQ> #1 AND.L P2_ROUND <EQ> #1 THEN
+00001AA2  43F9 000033AF            726                  LEA             ROUND3S,A1              ; round 3
+00001AA8  223C 00000129            727                  MOVE.L          #297,D1                 ;  x position of string
+00001AAE  7428                     728                  MOVE.L          #40,D2                  ;  y position of string
+00001AB0  4E4F                     729                  TRAP            #15
+00001AB2                           730                  ELSE
+00001AB6                           731                  IF.L P1_ROUND <EQ> #1 OR.L P2_ROUND <EQ> #1 THEN 
+00001AD0  43F9 000033A8            732                  LEA             ROUND2S,A1              ; round 2
+00001AD6  223C 00000129            733                  MOVE.L          #297,D1                 ;  x position of string
+00001ADC  7428                     734                  MOVE.L          #40,D2                  ;  y position of string
+00001ADE  4E4F                     735                  TRAP            #15
+00001AE0                           736                  ELSE
+00001AE4  43F9 000033A1            737                  LEA             ROUND1S,A1              ; round 1
+00001AEA  223C 00000129            738                  MOVE.L          #297,D1                 ;  x position of string
+00001AF0  742A                     739                  MOVE.L          #42,D2                  ;  y position of string
+00001AF2  4E4F                     740                  TRAP            #15
+00001AF4                           741                  ENDI
+00001AF4                           742                  ENDI
+00001AF4                           743  
+00001AF4                           744  
+00001AF4                           745  
+00001AF4                           746                  
+00001AF4  303C 005E                747                  MOVE            #94,D0                  ;draw from buffer
+00001AF8  4E4F                     748                  TRAP            #15                    
+00001AFA                           749  
+00001AFA  4E75                     750                  RTS
+00001AFC                           751                  
+00001AFC                           752                  
+00001AFC                           753  *******************************************************************************************************************
+00001AFC                           754  *******************************************************************************************************************
+00001AFC                           755                  
+00001AFC                           756  KEY_CHECKP1:
+00001AFC  7013                     757                  MOVE.L          #19,D0                  ; return current state of up to 4 specified keys
+00001AFE  223C 41445753            758                  MOVE.L          #'A'<<24+'D'<<16+'W'<<8+'S',D1      ;   p1 mouvment
+00001B04                           759  
+00001B04  4E4F                     760                  TRAP            #15
+00001B06                           761                  
+00001B06  2A39 00003246            762                  MOVE.L          RH1_X,D5                            ;    p1 mouvment limits
+00001B0C  DAB9 00003256            763                  ADD.L           HAND_DI,D5
+00001B12  2C39 0000326E            764                  MOVE.L          LH1_Y,D6
+00001B18  DCB9 00003256            765                  ADD.L           HAND_DI,D6
+00001B1E  2E39 00003276            766                  MOVE.L          LH2_Y,D7
+00001B24  DEB9 00003256            767                  ADD.L           HAND_DI,D7
+00001B2A                           768                  IF.L IS_INVERSED <EQ> #1 THEN
+00001B38  9AB9 0000323E            769                  SUB.L           B_W,D5
+00001B3E  9AB9 00003256            770                  SUB.L           HAND_DI,D5
+00001B44  9AB9 0000323E            771                  SUB.L           B_W,D5
+00001B4A  9AB9 00003256            772                  SUB.L           HAND_DI,D5
+00001B50  9AB9 0000323E            773                  SUB.L           B_W,D5
+00001B56  9AB9 00003256            774                  SUB.L           HAND_DI,D5
+00001B5C  0685 0000000A            775                  ADD.L           #10,D5
+00001B62  9AB9 00003256            776                  SUB.L           HAND_DI,D5
+00001B68                           777                  ENDI               
+00001B68                           778                  
+00001B68                           779                  
+00001B68  0801 0018                780                  BTST.L            #24,D1                            ;   p1 mouvment left 
+00001B6C                           781                  IF <NE> THEN
+00001B70                           782                   IF.L RH2_X <EQ> D5 THEN
+00001B7A                           783                    IF.L IS_INVERSED <EQ> #1 THEN
+00001B88                           784                    IF.L D6 <GT> RH2_Y AND.L D7 <GT> RH1_Y THEN       ;   left limit
+00001B9C  4E75                     785                     RTS
+00001B9E                           786                    ENDI
+00001B9E                           787                    ENDI
+00001B9E                           788                   ENDI
+00001B9E                           789                  IF.L HEAD1_X <GE> #0 THEN
+00001BAC  53B9 0000322E            790                  SUB.L           #1,B1_X
+00001BB2  53B9 00003246            791                  SUB.L           #1,RH1_X
+00001BB8  53B9 0000325A            792                  SUB.L           #1,HEAD1_X
+00001BBE  53B9 0000326A            793                  SUB.L           #1,LH1_X
+00001BC4  53B9 0000327A            794                  SUB.L           #1,BHR1_X
+00001BCA  53B9 00003350            795                  SUB.L           #1,BHL1_X
+00001BD0  2A39 00003236            796                  MOVE.L          B2_X,D5
+00001BD6                           797                  IF.L B1_X <LO> D5 THEN
+00001BE0  23FC 00000000 00003368   798                  MOVE.L          #0,IS_INVERSED                      ;   inversed to normal
+00001BEA                           799                  ENDI
+00001BEA                           800                  ENDI
+00001BEA                           801                  ENDI
+00001BEA                           802                  
+00001BEA  0801 0010                803                  BTST.L            #16,D1                            ;   p1 mouvment right
+00001BEE                           804                  IF <NE> THEN
+00001BF2                           805                   IF.L RH2_X <EQ> D5 THEN
+00001BFC                           806                    IF.L IS_INVERSED <EQ> #0 THEN
+00001C0A                           807                    IF.L D6 <GT> RH2_Y AND.L D7 <GT> RH1_Y THEN       ;   right limit
+00001C1E  4E75                     808                     RTS
+00001C20                           809                    ENDI
+00001C20                           810                    ENDI
+00001C20                           811                   ENDI
+00001C20                           812                  IF.L IS_INVERSED <EQ> #1 THEN
+00001C2E                           813                  IF.L RH1_X <LE> #640 THEN
+00001C3C  52B9 0000322E            814                  ADDI.L           #1,B1_X
+00001C42  52B9 00003246            815                  ADDI.L           #1,RH1_X
+00001C48  52B9 0000325A            816                  ADDI.L           #1,HEAD1_X
+00001C4E  52B9 0000326A            817                  ADDI.L           #1,LH1_X
+00001C54  52B9 0000327A            818                  ADDI.L           #1,BHR1_X
+00001C5A  52B9 00003350            819                  ADDI.L           #1,BHL1_X
+00001C60  2A39 00003236            820                  MOVE.L           B2_X,D5
+00001C66                           821                  IF.L B1_X <GT> D5 THEN
+00001C70  23FC 00000001 00003368   822                  MOVE.L           #1,IS_INVERSED                     ;   normal to inversed
+00001C7A                           823                  ENDI
+00001C7A                           824                  ENDI
+00001C7A                           825                  ELSE
+00001C7E                           826                  IF.L RH1_X <LE> #590 THEN
+00001C8C  52B9 0000322E            827                  ADDI.L           #1,B1_X
+00001C92  52B9 00003246            828                  ADDI.L           #1,RH1_X
+00001C98  52B9 0000325A            829                  ADDI.L           #1,HEAD1_X
+00001C9E  52B9 0000326A            830                  ADDI.L           #1,LH1_X
+00001CA4  52B9 0000327A            831                  ADDI.L           #1,BHR1_X
+00001CAA  52B9 00003350            832                  ADDI.L           #1,BHL1_X
+00001CB0  2A39 00003236            833                  MOVE.L           B2_X,D5
+00001CB6                           834                  IF.L B1_X <GT> D5 THEN
+00001CC0  23FC 00000001 00003368   835                  MOVE.L           #1,IS_INVERSED
+00001CCA                           836                  ENDI
+00001CCA                           837                  ENDI
+00001CCA                           838                  ENDI
+00001CCA                           839                  ENDI
+00001CCA                           840                  
+00001CCA  2A39 00003276            841                  MOVE.L          LH2_Y,D5
+00001CD0  DAB9 00003256            842                  ADD.L           HAND_DI,D5
+00001CD6  2E39 00003236            843                  MOVE.L          B2_X,D7
+00001CDC  DEB9 0000323E            844                  ADD.L           B_W,D7
+00001CE2  2C39 0000326A            845                  MOVE.L          LH1_X,D6
+00001CE8  DCB9 00003256            846                  ADD.L           HAND_DI,D6
+00001CEE                           847  
+00001CEE                           848                  
+00001CEE                           849  
+00001CEE  0801 0008                850                  BTST.L            #8,D1                             ;   p1 mouvment up
+00001CF2                           851                  IF <NE> THEN
+00001CF6                           852                  IF.L RH1_Y <EQ> D5 THEN
+00001D00                           853                    IF.L IS_INVERSED <EQ> #0 THEN
+00001D0E                           854                    IF.L D6 <GT> RH2_X AND.L D7 <GT> B1_X THEN        ;   up limit
+00001D22  4E75                     855                     RTS
+00001D24                           856                    ENDI
+00001D24                           857                    ENDI
+00001D24                           858                    IF.L IS_INVERSED <EQ> #1 THEN
+00001D32  2A39 00003272            859                    MOVE.L          LH2_X,D5
+00001D38  DAB9 00003256            860                    ADD.L           HAND_DI,D5
+00001D3E  DAB9 00003296            861                    ADD.L           BHL2_W,D5
+00001D44  DAB9 00003296            862                    ADD.L           BHL2_W,D5
+00001D4A  DAB9 0000323E            863                    ADD.L           B_W,D5
+00001D50  2E39 0000322E            864                    MOVE.L          B1_X,D7
+00001D56  DEB9 0000323E            865                    ADD.L           B_W,D7
+00001D5C  2C39 00003246            866                    MOVE.L          RH1_X,D6
+00001D62  9CB9 0000328A            867                    SUB.L           BHR1_W,D6
+00001D68  9CB9 0000328A            868                    SUB.L           BHR1_W,D6
+00001D6E  9CB9 0000323E            869                    SUB.L           B_W,D6
+00001D74                           870                    IF.L D5 <GT> D6 AND.L D7 <GT> B2_X THEN
+00001D84  4E75                     871                    RTS
+00001D86                           872                    ENDI
+00001D86                           873                    ENDI
+00001D86                           874                  ENDI
+00001D86                           875                  IF.L RH1_Y <GE> #0 THEN
+00001D94  53B9 00003232            876                  SUB.L           #1,B1_Y
+00001D9A  53B9 0000324A            877                  SUB.L           #1,RH1_Y
+00001DA0  53B9 0000325E            878                  SUB.L           #1,HEAD1_Y
+00001DA6  53B9 0000326E            879                  SUB.L           #1,LH1_Y
+00001DAC  53B9 0000327E            880                  SUB.L           #1,BHR1_Y
+00001DB2  53B9 00003354            881                  SUB.L           #1,BHL1_Y
+00001DB8                           882                  ENDI
+00001DB8                           883                  ENDI
+00001DB8                           884                  
+00001DB8  2A39 0000326E            885                  MOVE.L          LH1_Y,D5
+00001DBE  DAB9 00003256            886                  ADD.L           HAND_DI,D5
+00001DC4                           887                  
+00001DC4                           888                  
+00001DC4                           889  
+00001DC4  0801 0000                890                  BTST.L            #0,D1                                 ;   p1 mouvment down
+00001DC8                           891                  IF <NE> THEN
+00001DCC                           892                  IF.L RH2_Y <EQ> D5 THEN
+00001DD6                           893                    IF.L IS_INVERSED <EQ> #0 THEN
+00001DE4                           894                    IF.L D6 <GT> RH2_X AND.L D7 <GT> B1_X THEN            ;   down limit
+00001DF8  4E75                     895                     RTS
+00001DFA                           896                    ENDI
+00001DFA                           897                    ENDI
+00001DFA                           898                    IF.L IS_INVERSED <EQ> #1 THEN
+00001E08  2A39 00003272            899                    MOVE.L          LH2_X,D5
+00001E0E  DAB9 00003256            900                    ADD.L           HAND_DI,D5
+00001E14  DAB9 00003296            901                    ADD.L           BHL2_W,D5
+00001E1A  DAB9 00003296            902                    ADD.L           BHL2_W,D5
+00001E20  DAB9 0000323E            903                    ADD.L           B_W,D5
+00001E26  2E39 0000322E            904                    MOVE.L          B1_X,D7
+00001E2C  DEB9 0000323E            905                    ADD.L           B_W,D7
+00001E32  2C39 00003246            906                    MOVE.L          RH1_X,D6
+00001E38  9CB9 0000328A            907                    SUB.L           BHR1_W,D6
+00001E3E  9CB9 0000328A            908                    SUB.L           BHR1_W,D6
+00001E44  9CB9 0000323E            909                    SUB.L           B_W,D6
+00001E4A                           910                    IF.L D5 <GT> D6 AND.L D7 <GT> B2_X THEN
+00001E5A  4E75                     911                    RTS
+00001E5C                           912                    ENDI
+00001E5C                           913                    ENDI
+00001E5C                           914                    ENDI
+00001E5C                           915                  IF.L LH1_Y <LE> #420 THEN
+00001E6A  52B9 00003232            916                  ADDI.L           #1,B1_Y
+00001E70  52B9 0000324A            917                  ADDI.L           #1,RH1_Y
+00001E76  52B9 0000325E            918                  ADDI.L           #1,HEAD1_Y
+00001E7C  52B9 0000326E            919                  ADDI.L           #1,LH1_Y
+00001E82  52B9 0000327E            920                  ADDI.L           #1,BHR1_Y
+00001E88  52B9 00003354            921                  ADDI.L           #1,BHL1_Y
+00001E8E                           922                  ENDI
+00001E8E                           923                  ENDI
+00001E8E                           924                  
+00001E8E  4E75                     925                  RTS
+00001E90                           926  
+00001E90                           927  *******************************************************************************************************************
+00001E90                           928  *******************************************************************************************************************
+00001E90                           929  
+00001E90                           930  KEY_CHECKP2:
+00001E90  7013                     931                  MOVE.L          #19,D0                  ; return current state of up to 4 specified keys
+00001E92  223C 25272628            932                  MOVE.L          #$25<<24+$27<<16+$26<<8+$28,D1          ;   p2 mouvment
+00001E98                           933  
+00001E98  4E4F                     934                  TRAP            #15
+00001E9A                           935                  
+00001E9A  2A39 00003246            936                  MOVE.L          RH1_X,D5                                ;   mouvment limits
+00001EA0  DAB9 00003256            937                  ADD.L           HAND_DI,D5
+00001EA6  2C39 0000326E            938                  MOVE.L          LH1_Y,D6
+00001EAC  DCB9 00003256            939                  ADD.L           HAND_DI,D6
+00001EB2  2E39 00003276            940                  MOVE.L          LH2_Y,D7
+00001EB8  DEB9 00003256            941                  ADD.L           HAND_DI,D7
+00001EBE                           942                  IF.L IS_INVERSED <EQ> #1 THEN
+00001ECC  9AB9 0000323E            943                  SUB.L           B_W,D5
+00001ED2  9AB9 00003256            944                  SUB.L           HAND_DI,D5
+00001ED8  9AB9 0000323E            945                  SUB.L           B_W,D5
+00001EDE  9AB9 00003256            946                  SUB.L           HAND_DI,D5
+00001EE4  9AB9 0000323E            947                  SUB.L           B_W,D5
+00001EEA  9AB9 00003256            948                  SUB.L           HAND_DI,D5
+00001EF0  0685 0000000A            949                  ADD.L           #10,D5
+00001EF6  9AB9 00003256            950                  SUB.L           HAND_DI,D5
+00001EFC                           951                  ENDI
+00001EFC                           952                  
+00001EFC                           953                  
+00001EFC  0801 0018                954                  BTST.L            #24,D1                                 ;  mouvment left
+00001F00                           955                  IF <NE> THEN
+00001F04                           956                   IF.L RH2_X <EQ> D5 THEN
+00001F0E                           957                    IF.L IS_INVERSED <EQ> #0 THEN
+00001F1C                           958                    IF.L D6 <GT> RH2_Y AND.L D7 <GT> RH1_Y THEN            ;  left limit
+00001F30  4E75                     959                     RTS
+00001F32                           960                    ENDI
+00001F32                           961                    ENDI
+00001F32                           962                   ENDI
+00001F32                           963                  IF.L RH2_X <GE> #0 THEN
+00001F40  53B9 00003236            964                  SUB.L           #1,B2_X
+00001F46  53B9 0000324E            965                  SUB.L           #1,RH2_X
+00001F4C  53B9 00003262            966                  SUB.L           #1,HEAD2_X
+00001F52  53B9 00003272            967                  SUB.L           #1,LH2_X
+00001F58  53B9 00003282            968                  SUB.L           #1,BHR2_X
+00001F5E  53B9 00003358            969                  SUB.L           #1,BHL2_X
+00001F64  2A39 00003236            970                  MOVE.L           B2_X,D5
+00001F6A                           971                  IF.L B1_X <GT> D5 THEN
+00001F74  23FC 00000001 00003368   972                  MOVE.L           #1,IS_INVERSED
+00001F7E                           973                  ENDI
+00001F7E                           974                  ENDI
+00001F7E                           975                  ENDI
+00001F7E                           976                  
+00001F7E  0801 0010                977                  BTST.L            #16,D1                                  ; mouvment right
+00001F82                           978                  IF <NE> THEN
+00001F86                           979                   IF.L RH2_X <EQ> D5 THEN
+00001F90                           980                    IF.L IS_INVERSED <EQ> #1 THEN
+00001F9E                           981                    IF.L D6 <GT> RH2_Y AND.L D7 <GT> RH1_Y THEN             ; right limit
+00001FB2  4E75                     982                     RTS
+00001FB4                           983                    ENDI
+00001FB4                           984                    ENDI
+00001FB4                           985                   ENDI
+00001FB4                           986                  IF.L HEAD2_X <LE> #580 THEN
+00001FC2  52B9 00003236            987                  ADDI.L           #1,B2_X
+00001FC8  52B9 0000324E            988                  ADDI.L           #1,RH2_X
+00001FCE  52B9 00003262            989                  ADDI.L           #1,HEAD2_X
+00001FD4  52B9 00003272            990                  ADDI.L           #1,LH2_X
+00001FDA  52B9 00003282            991                  ADDI.L           #1,BHR2_X
+00001FE0  52B9 00003358            992                  ADDI.L           #1,BHL2_X
+00001FE6  2A39 00003236            993                  MOVE.L          B2_X,D5
+00001FEC                           994                  IF.L B1_X <LO> D5 THEN
+00001FF6  23FC 00000000 00003368   995                  MOVE.L          #0,IS_INVERSED
+00002000                           996                  ENDI
+00002000                           997                  ENDI
+00002000                           998                  ENDI
+00002000                           999                  
+00002000                          1000                  
+00002000  2A39 0000326E           1001                  MOVE.L          LH1_Y,D5
+00002006  DAB9 00003256           1002                  ADD.L           HAND_DI,D5
+0000200C  2E39 00003236           1003                  MOVE.L          B2_X,D7
+00002012  DEB9 0000323E           1004                  ADD.L           B_W,D7
+00002018  2C39 0000326A           1005                  MOVE.L          LH1_X,D6
+0000201E  DCB9 00003256           1006                  ADD.L           HAND_DI,D6
+00002024                          1007                  
+00002024                          1008  
+00002024  0801 0008               1009                  BTST.L            #8,D1                                 ;mouvment up
+00002028                          1010                  IF <NE> THEN
+0000202C                          1011                  IF.L RH2_Y <EQ> D5 THEN
+00002036                          1012                    IF.L IS_INVERSED <EQ> #0 THEN
+00002044                          1013                    IF.L D6 <GT> RH2_X AND.L D7 <GT> B1_X THEN            ;up limit
+00002058  4E75                    1014                     RTS
+0000205A                          1015                    ENDI
+0000205A                          1016                    ENDI
+0000205A                          1017                    IF.L IS_INVERSED <EQ> #1 THEN
+00002068  2A39 00003272           1018                    MOVE.L          LH2_X,D5
+0000206E  DAB9 00003256           1019                    ADD.L           HAND_DI,D5
+00002074  DAB9 00003296           1020                    ADD.L           BHL2_W,D5
+0000207A  DAB9 00003296           1021                    ADD.L           BHL2_W,D5
+00002080  DAB9 0000323E           1022                    ADD.L           B_W,D5
+00002086  2E39 0000322E           1023                    MOVE.L          B1_X,D7
+0000208C  DEB9 0000323E           1024                    ADD.L           B_W,D7
+00002092  2C39 00003246           1025                    MOVE.L          RH1_X,D6
+00002098  9CB9 0000328A           1026                    SUB.L           BHR1_W,D6
+0000209E  9CB9 0000328A           1027                    SUB.L           BHR1_W,D6
+000020A4  9CB9 0000323E           1028                    SUB.L           B_W,D6
+000020AA                          1029                    IF.L D5 <GT> D6 AND.L D7 <GT> B2_X THEN
+000020BA  4E75                    1030                    RTS
+000020BC                          1031                    ENDI
+000020BC                          1032                    ENDI
+000020BC                          1033                  ENDI
+000020BC                          1034                  IF.L RH2_Y <GE> #0 THEN
+000020CA  53B9 0000323A           1035                  SUB.L           #1,B2_Y
+000020D0  53B9 00003252           1036                  SUB.L           #1,RH2_Y
+000020D6  53B9 00003266           1037                  SUB.L           #1,HEAD2_Y
+000020DC  53B9 00003276           1038                  SUB.L           #1,LH2_Y
+000020E2  53B9 00003286           1039                  SUB.L           #1,BHR2_Y
+000020E8  53B9 0000335C           1040                  SUB.L           #1,BHL2_Y
+000020EE                          1041                  ENDI
+000020EE                          1042                  ENDI
+000020EE                          1043                  
+000020EE                          1044                  
+000020EE  2A39 00003276           1045                  MOVE.L          LH2_Y,D5
+000020F4  DAB9 00003256           1046                  ADD.L           HAND_DI,D5
+000020FA                          1047                  
+000020FA                          1048  
+000020FA  0801 0000               1049                  BTST.L            #0,D1                                     ;mouvment down
+000020FE                          1050                  IF <NE> THEN
+00002102                          1051                  IF.L RH1_Y <EQ> D5 THEN
+0000210C                          1052                    IF.L IS_INVERSED <EQ> #0 THEN
+0000211A                          1053                    IF.L D6 <GT> RH2_X AND.L D7 <GT> B1_X THEN                ;down limit
+0000212E  4E75                    1054                     RTS
+00002130                          1055                    ENDI
+00002130                          1056                    ENDI
+00002130                          1057                    IF.L IS_INVERSED <EQ> #1 THEN
+0000213E  2A39 00003272           1058                    MOVE.L          LH2_X,D5
+00002144  DAB9 00003256           1059                    ADD.L           HAND_DI,D5
+0000214A  DAB9 00003296           1060                    ADD.L           BHL2_W,D5
+00002150  DAB9 00003296           1061                    ADD.L           BHL2_W,D5
+00002156  DAB9 0000323E           1062                    ADD.L           B_W,D5
+0000215C  2E39 0000322E           1063                    MOVE.L          B1_X,D7
+00002162  DEB9 0000323E           1064                    ADD.L           B_W,D7
+00002168  2C39 00003246           1065                    MOVE.L          RH1_X,D6
+0000216E  9CB9 0000328A           1066                    SUB.L           BHR1_W,D6
+00002174  9CB9 0000328A           1067                    SUB.L           BHR1_W,D6
+0000217A  9CB9 0000323E           1068                    SUB.L           B_W,D6
+00002180                          1069                    IF.L D5 <GT> D6 AND.L D7 <GT> B2_X THEN
+00002190  4E75                    1070                    RTS
+00002192                          1071                    ENDI
+00002192                          1072                    ENDI
+00002192                          1073                  ENDI
+00002192                          1074                  IF.L LH2_Y <LE> #420 THEN
+000021A0  52B9 0000323A           1075                  ADDI.L           #1,B2_Y
+000021A6  52B9 00003252           1076                  ADDI.L           #1,RH2_Y
+000021AC  52B9 00003266           1077                  ADDI.L           #1,HEAD2_Y
+000021B2  52B9 00003276           1078                  ADDI.L           #1,LH2_Y
+000021B8  52B9 00003286           1079                  ADDI.L           #1,BHR2_Y
+000021BE  52B9 0000335C           1080                  ADDI.L           #1,BHL2_Y
+000021C4                          1081                  ENDI
+000021C4                          1082                  ENDI
+000021C4                          1083  
+000021C4                          1084                  
+000021C4  4E75                    1085                  RTS
+000021C6                          1086  
+000021C6                          1087  
+000021C6                          1088  *******************************************************************************************************************
+000021C6                          1089  *******************************************************************************************************************
+000021C6                          1090  
+000021C6                          1091  
+000021C6                          1092  KEY_CHECKPUNCH1:
+000021C6  7013                    1093                  MOVE.L          #19,D0                  ; return current state of 2 specified keys
+000021C8  223C 47480000           1094                  MOVE.L          #'G'<<24+'H'<<16,D1     ; p1 punch
+000021CE  4E4F                    1095                  TRAP            #15
+000021D0  267C 00000000           1096                  MOVE.L          #0,A3
+000021D6                          1097                  
+000021D6                          1098                  
+000021D6  0801 0018               1099                  BTST            #24,D1
+000021DA                          1100                  IF <NE> THEN                            ;FOR BOXING WITH RIGHT HAND
+000021DE                          1101                  IF.L P1RL <EQ> #1 THEN                  ;for not punching with same hand two times
+000021EC                          1102  PUNCHGR1
+000021EC                          1103                  IF.L IS_INVERSED <EQ> #1 THEN           ;punching
+000021FA  53B9 0000327A           1104                  SUB.L           #1,BHR1_X
+00002200                          1105                  ENDI
+00002200  52B9 0000328A           1106                  ADD.L           #1,BHR1_W
+00002206  52B9 00003246           1107                  ADD.L           #1,RH1_X
+0000220C  528B                    1108                  ADD.L           #1,A3
+0000220E  6100 EEEC               1109                  BSR             PAINT
+00002212  B7FC 0000003C           1110                  CMP.L           #60,A3
+00002218  66D2                    1111                  BNE             PUNCHGR1
+0000221A                          1112                  
+0000221A  103C 0017               1113                  MOVE.B          #23,D0                  ;delay to reduce cpu workload
+0000221E  720D                    1114                  MOVE.L          #13,D1                  ;delay 13/100 sec
+00002220  4E4F                    1115                  TRAP            #15                     ;execute delay
+00002222  43F9 00003376           1116                  LEA             WOOSH,A1                ;sound of punching
+00002228  7200                    1117                  MOVE.L          #0,D1
+0000222A  704A                    1118                  MOVE.L          #74,D0
+0000222C  4E4F                    1119                  TRAP            #15
+0000222E  704B                    1120                  MOVE.L          #75,D0
+00002230  7200                    1121                  MOVE.L          #0,D1
+00002232  4E4F                    1122                  TRAP            #15
+00002234                          1123                  
+00002234  53B9 00003360           1124                  SUB.L           #1,P1RL                 ; for left hand
+0000223A                          1125                  
+0000223A  2439 00003246           1126                  MOVE.L          RH1_X,D2                ;SCORE statments
+00002240  D4B9 00003256           1127                  ADD.L           HAND_DI,D2
+00002246  2639 00003252           1128                  MOVE.L          RH2_Y,D3
+0000224C  D6B9 00003256           1129                  ADD.L           HAND_DI,D3
+00002252  2839 00003276           1130                  MOVE.L          LH2_Y,D4
+00002258  98B9 00003256           1131                  SUB.L           HAND_DI,D4
+0000225E  2239 00003246           1132                  MOVE.L          RH1_X,D1
+00002264  92B9 0000328A           1133                  SUB.L           BHR1_W,D1
+0000226A  92B9 0000328A           1134                  SUB.L           BHR1_W,D1
+00002270  92B9 0000323E           1135                  SUB.L           B_W,D1
+00002276  0481 0000003C           1136                  SUB.L           #60,D1
+0000227C                          1137                  
+0000227C                          1138                  IF.L RH1_Y <GT> D3 AND.L RH1_Y <LO> D4 THEN         ; for score
+00002290                          1139                  IF.L IS_INVERSED <EQ> #1 THEN
+0000229E                          1140                  IF.L D1 <LO> HEAD2_X THEN
+000022A8  52B9 00003312           1141                  ADD.L           #1,P1_SCORE
+000022AE  06B9 0000000E 0000334C  1142                  ADD.L           #14,H2_X
+000022B8  43F9 0000336C           1143                  LEA             punch,A1                ;sound of score
+000022BE  7200                    1144                  MOVE.L          #0,D1
+000022C0  704A                    1145                  MOVE.L          #74,D0
+000022C2  4E4F                    1146                  TRAP            #15
+000022C4  704B                    1147                  MOVE.L          #75,D0
+000022C6  7200                    1148                  MOVE.L          #0,D1
+000022C8  4E4F                    1149                  TRAP            #15
+000022CA                          1150                  IF.L B2_X <GT> #60 THEN                              ; for other player throw in inversed
+000022D8  04B9 00000032 00003236  1151                  SUB.L           #50,B2_X
+000022E2  04B9 00000032 0000324E  1152                  SUB.L           #50,RH2_X
+000022EC  04B9 00000032 00003262  1153                  SUB.L           #50,HEAD2_X
+000022F6  04B9 00000032 00003272  1154                  SUB.L           #50,LH2_X
+00002300  04B9 00000032 00003282  1155                  SUB.L           #50,BHR2_X
+0000230A  04B9 00000032 00003358  1156                  SUB.L           #50,BHL2_X
+00002314                          1157                  ENDI
+00002314  06B9 00000032 00003252  1158                  ADD.L           #50,RH2_Y
+0000231E  06B9 00000032 00003266  1159                  ADD.L           #50,HEAD2_Y
+00002328  06B9 00000032 00003276  1160                  ADD.L           #50,LH2_Y
+00002332  06B9 00000032 00003286  1161                  ADD.L           #50,BHR2_Y
+0000233C  06B9 00000032 0000335C  1162                  ADD.L           #50,BHL2_Y
+00002346  06B9 00000032 0000323A  1163                  ADD.L           #50,B2_Y
+00002350                          1164  
+00002350                          1165                  ENDI
+00002350                          1166                  ENDI
+00002350                          1167                  IF.L IS_INVERSED <EQ> #0 THEN                           ; for score
+0000235E                          1168                  IF.L D2 <GT> HEAD2_X AND.L D2 <GT> RH2_X THEN
+00002372  52B9 00003312           1169                  ADD.L           #1,P1_SCORE
+00002378  06B9 0000000E 0000334C  1170                  ADD.L           #14,H2_X
+00002382  43F9 0000336C           1171                  LEA             punch,A1                ;sound for score
+00002388  7200                    1172                  MOVE.L          #0,D1
+0000238A  704A                    1173                  MOVE.L          #74,D0
+0000238C  4E4F                    1174                  TRAP            #15
+0000238E  704B                    1175                  MOVE.L          #75,D0
+00002390  7200                    1176                  MOVE.L          #0,D1
+00002392  4E4F                    1177                  TRAP            #15
+00002394                          1178                  IF.L B2_X <LO> #550 THEN                                ; for other player throw in normal
+000023A2  06B9 00000032 00003236  1179                  ADD.L           #50,B2_X
+000023AC  06B9 00000032 0000324E  1180                  ADD.L           #50,RH2_X
+000023B6  06B9 00000032 00003262  1181                  ADD.L           #50,HEAD2_X
+000023C0  06B9 00000032 00003272  1182                  ADD.L           #50,LH2_X
+000023CA  06B9 00000032 00003282  1183                  ADD.L           #50,BHR2_X
+000023D4  06B9 00000032 00003358  1184                  ADD.L           #50,BHL2_X
+000023DE                          1185                  ELSE
+000023E2  23FC 00000258 00003236  1186                  MOVE.L          #600,B2_X
+000023EC  23FC 00000217 0000324E  1187                  MOVE.L          #535,RH2_X
+000023F6  23FC 00000244 00003262  1188                  MOVE.L          #580,HEAD2_X
+00002400  23FC 00000217 00003272  1189                  MOVE.L          #535,LH2_X
+0000240A  23FC 00000253 00003282  1190                  MOVE.L          #595,BHR2_X
+00002414  23FC 00000253 00003358  1191                  MOVE.L          #595,BHL2_X
+0000241E                          1192                  ENDI
+0000241E  06B9 00000032 00003252  1193                  ADD.L           #50,RH2_Y
+00002428  06B9 00000032 00003266  1194                  ADD.L           #50,HEAD2_Y
+00002432  06B9 00000032 00003276  1195                  ADD.L           #50,LH2_Y
+0000243C  06B9 00000032 00003286  1196                  ADD.L           #50,BHR2_Y
+00002446  06B9 00000032 0000335C  1197                  ADD.L           #50,BHL2_Y
+00002450  06B9 00000032 0000323A  1198                  ADD.L           #50,B2_Y
+0000245A                          1199  
+0000245A                          1200                  ENDI
+0000245A                          1201                  ENDI
+0000245A                          1202                  ENDI
+0000245A                          1203                  
+0000245A                          1204                  
+0000245A                          1205  
+0000245A                          1206  PUNCHRR1                                                    ; box return
+0000245A  53B9 0000328A           1207                  SUB.L           #1,BHR1_W
+00002460  53B9 00003246           1208                  SUB.L           #1,RH1_X
+00002466  538B                    1209                  SUB.L           #1,A3
+00002468                          1210                  IF.L IS_INVERSED <EQ> #1 THEN              
+00002476  52B9 0000327A           1211                  ADD.L           #1,BHR1_X
+0000247C                          1212                  ENDI
+0000247C  6100 EC7E               1213                  BSR             PAINT
+00002480  B7FC 00000000           1214                  CMP.L           #0,A3
+00002486  66D2                    1215                  BNE             PUNCHRR1
+00002488                          1216                  ENDI
+00002488                          1217                  ENDI
+00002488                          1218                  
+00002488                          1219                  
+00002488  0801 0010               1220                  BTST            #16,D1                  ;   left hand boxing
+0000248C                          1221                  IF <NE> THEN
+00002490                          1222                  IF.L P1RL <EQ> #0 THEN
+0000249E                          1223  PUNCHGL1
+0000249E                          1224                  IF.L IS_INVERSED <EQ> #1 THEN             ;FOR BOXING WITH left HAND    
+000024AC  53B9 00003350           1225                  SUB.L           #1,BHL1_X
+000024B2                          1226                  ENDI
+000024B2  52B9 0000328E           1227                  ADD.L           #1,BHL1_W
+000024B8  52B9 0000326A           1228                  ADD.L           #1,LH1_X
+000024BE  528C                    1229                  ADD.L           #1,A4
+000024C0  6100 EC3A               1230                  BSR             PAINT
+000024C4  B9FC 0000003C           1231                  CMP.L           #60,A4
+000024CA  66D2                    1232                  BNE             PUNCHGL1
+000024CC                          1233                  
+000024CC  103C 0017               1234                  MOVE.B          #23,D0                  ;delay to reduce cpu workload
+000024D0  720D                    1235                  MOVE.L          #13,D1                  ;delay 13/100 sec
+000024D2  4E4F                    1236                  TRAP            #15                     ;execute delay
+000024D4  43F9 00003376           1237                  LEA             WOOSH,A1                ;sound of punching
+000024DA  7200                    1238                  MOVE.L          #0,D1
+000024DC  704A                    1239                  MOVE.L          #74,D0
+000024DE  4E4F                    1240                  TRAP            #15
+000024E0  704B                    1241                  MOVE.L          #75,D0
+000024E2  7200                    1242                  MOVE.L          #0,D1
+000024E4  4E4F                    1243                  TRAP            #15
+000024E6  2439 0000326A           1244                  MOVE.L          LH1_X,D2                ;FOR SCORE
+000024EC  D4B9 00003256           1245                  ADD.L           HAND_DI,D2
+000024F2  2639 00003252           1246                  MOVE.L          RH2_Y,D3
+000024F8  D6B9 00003256           1247                  ADD.L           HAND_DI,D3
+000024FE  2839 00003276           1248                  MOVE.L          LH2_Y,D4
+00002504  98B9 00003256           1249                  SUB.L           HAND_DI,D4
+0000250A  2239 0000326A           1250                  MOVE.L          LH1_X,D1
+00002510  92B9 0000328E           1251                  SUB.L           BHL1_W,D1
+00002516  92B9 0000328E           1252                  SUB.L           BHL1_W,D1
+0000251C  92B9 0000323E           1253                  SUB.L           B_W,D1
+00002522  0481 0000003C           1254                  SUB.L           #60,D1
+00002528  52B9 00003360           1255                  ADD.L           #1,P1RL
+0000252E                          1256  
+0000252E                          1257                  
+0000252E                          1258                  IF.L LH1_Y <GT> D3 AND.L LH1_Y <LO> D4 THEN     ;score in inversed
+00002542                          1259                  IF.L IS_INVERSED <EQ> #1 THEN
+00002550                          1260                  IF.L D1 <LO> HEAD2_X THEN
+0000255A  52B9 00003312           1261                  ADD.L           #1,P1_SCORE
+00002560  06B9 0000000E 0000334C  1262                  ADD.L           #14,H2_X
+0000256A  43F9 0000336C           1263                  LEA             punch,A1                ;sound of score
+00002570  7200                    1264                  MOVE.L          #0,D1
+00002572  704A                    1265                  MOVE.L          #74,D0
+00002574  4E4F                    1266                  TRAP            #15
+00002576  704B                    1267                  MOVE.L          #75,D0
+00002578  7200                    1268                  MOVE.L          #0,D1
+0000257A  4E4F                    1269                  TRAP            #15
+0000257C                          1270                  IF.L B2_X <GT> #60 THEN                          ; for other player throw in inversed
+0000258A  04B9 00000032 00003236  1271                  SUB.L           #50,B2_X
+00002594  04B9 00000032 0000324E  1272                  SUB.L           #50,RH2_X
+0000259E  04B9 00000032 00003262  1273                  SUB.L           #50,HEAD2_X
+000025A8  04B9 00000032 00003272  1274                  SUB.L           #50,LH2_X
+000025B2  04B9 00000032 00003282  1275                  SUB.L           #50,BHR2_X
+000025BC  04B9 00000032 00003358  1276                  SUB.L           #50,BHL2_X
+000025C6                          1277                  ENDI
+000025C6  04B9 00000032 00003252  1278                  SUB.L           #50,RH2_Y
+000025D0  04B9 00000032 00003266  1279                  SUB.L           #50,HEAD2_Y
+000025DA  04B9 00000032 00003276  1280                  SUB.L           #50,LH2_Y
+000025E4  04B9 00000032 00003286  1281                  SUB.L           #50,BHR2_Y
+000025EE  04B9 00000032 0000335C  1282                  SUB.L           #50,BHL2_Y
+000025F8  04B9 00000032 0000323A  1283                  SUB.L           #50,B2_Y
+00002602                          1284  
+00002602                          1285                  ENDI
+00002602                          1286                  ENDI
+00002602                          1287                  IF.L IS_INVERSED <EQ> #0 THEN
+00002610                          1288                  IF.L D2 <GT> HEAD2_X AND.L D2 <GT> RH2_X THEN       ; for score
+00002624  52B9 00003312           1289                  ADD.L           #1,P1_SCORE
+0000262A  06B9 0000000E 0000334C  1290                  ADD.L           #14,H2_X
+00002634  43F9 0000336C           1291                  LEA             punch,A1                ;sound of score
+0000263A  7200                    1292                  MOVE.L          #0,D1
+0000263C  704A                    1293                  MOVE.L          #74,D0
+0000263E  4E4F                    1294                  TRAP            #15
+00002640  704B                    1295                  MOVE.L          #75,D0
+00002642  7200                    1296                  MOVE.L          #0,D1
+00002644  4E4F                    1297                  TRAP            #15
+00002646                          1298                  IF.L B2_X <LO> #550 THEN                         ; for other player throw in normal
+00002654  06B9 00000032 00003236  1299                  ADD.L           #50,B2_X
+0000265E  06B9 00000032 0000324E  1300                  ADD.L           #50,RH2_X
+00002668  06B9 00000032 00003262  1301                  ADD.L           #50,HEAD2_X
+00002672  06B9 00000032 00003272  1302                  ADD.L           #50,LH2_X
+0000267C  06B9 00000032 00003282  1303                  ADD.L           #50,BHR2_X
+00002686  06B9 00000032 00003358  1304                  ADD.L           #50,BHL2_X
+00002690                          1305                  ELSE
+00002694  23FC 00000258 00003236  1306                  MOVE.L          #600,B2_X
+0000269E  23FC 00000217 0000324E  1307                  MOVE.L          #535,RH2_X
+000026A8  23FC 00000244 00003262  1308                  MOVE.L          #580,HEAD2_X
+000026B2  23FC 00000217 00003272  1309                  MOVE.L          #535,LH2_X
+000026BC  23FC 00000253 00003282  1310                  MOVE.L          #595,BHR2_X
+000026C6  23FC 00000253 00003358  1311                  MOVE.L          #595,BHL2_X
+000026D0                          1312                  ENDI
+000026D0  04B9 00000032 00003252  1313                  SUB.L           #50,RH2_Y
+000026DA  04B9 00000032 00003266  1314                  SUB.L           #50,HEAD2_Y
+000026E4  04B9 00000032 00003276  1315                  SUB.L           #50,LH2_Y
+000026EE  04B9 00000032 00003286  1316                  SUB.L           #50,BHR2_Y
+000026F8  04B9 00000032 0000335C  1317                  SUB.L           #50,BHL2_Y
+00002702  04B9 00000032 0000323A  1318                  SUB.L           #50,B2_Y
+0000270C                          1319  
+0000270C                          1320                  ENDI
+0000270C                          1321                  ENDI
+0000270C                          1322                  ENDI
+0000270C                          1323                  
+0000270C                          1324  PUNCHRL1                                                            ;left hand returning
+0000270C  53B9 0000328E           1325                  SUB.L           #1,BHL1_W
+00002712  53B9 0000326A           1326                  SUB.L           #1,LH1_X
+00002718  538C                    1327                  SUB.L           #1,A4
+0000271A                          1328                  IF.L IS_INVERSED <EQ> #1 THEN              
+00002728  52B9 00003350           1329                  ADD.L           #1,BHL1_X
+0000272E                          1330                  ENDI
+0000272E  6100 E9CC               1331                  BSR             PAINT
+00002732  B9FC 00000000           1332                  CMP.L           #0,A4
+00002738  66D2                    1333                  BNE             PUNCHRL1
+0000273A                          1334                  ENDI
+0000273A                          1335                  ENDI
+0000273A                          1336                  
+0000273A                          1337                  
+0000273A  4E75                    1338                  RTS
+0000273C                          1339                  
+0000273C                          1340                  
+0000273C                          1341                  
+0000273C                          1342  *******************************************************************************************************************
+0000273C                          1343  *******************************************************************************************************************
+0000273C                          1344  
+0000273C                          1345                  
+0000273C                          1346  KEY_CHECKPUNCH2:
+0000273C                          1347  
+0000273C                          1348  
+0000273C  7013                    1349                  MOVE.L          #19,D0                  ; return current state of 2 specified keys
+0000273E  223C 4B4C0000           1350                  MOVE.L          #'K'<<24+'L'<<16,D1     ; p2 punch
+00002744  4E4F                    1351                  TRAP            #15
+00002746  267C 00000000           1352                  MOVE.L          #0,A3
+0000274C                          1353                  
+0000274C                          1354         
+0000274C  0801 0018               1355                  BTST            #24,D1
+00002750                          1356                  IF <NE> THEN                            ;FOR BOXING WITH RIGHT HAND
+00002754                          1357                  IF.L P2RL <EQ> #0 THEN                  ;for not boxing with same hand two times
+00002762                          1358  PUNCHGR2                                                ;box going
+00002762  52B9 00003296           1359                  ADD.L           #1,BHL2_W
+00002768  53B9 00003358           1360                  SUB.L           #1,BHL2_X
+0000276E  53B9 00003272           1361                  SUB.L           #1,LH2_X
+00002774                          1362                  
+00002774  528B                    1363                  ADD.L           #1,A3
+00002776  6100 E984               1364                  BSR             PAINT
+0000277A  B7FC 0000003C           1365                  CMP.L           #60,A3
+00002780  66E0                    1366                  BNE             PUNCHGR2
+00002782                          1367                  
+00002782  103C 0017               1368                  MOVE.B          #23,D0                  ;delay to reduce cpu workload
+00002786  720D                    1369                  MOVE.L          #13,D1                  ;delay 13/100 sec
+00002788  4E4F                    1370                  TRAP            #15                     ;execute delay
+0000278A  43F9 00003376           1371                  LEA             WOOSH,A1                ;sound of punching
+00002790  7200                    1372                  MOVE.L          #0,D1
+00002792  704A                    1373                  MOVE.L          #74,D0
+00002794  4E4F                    1374                  TRAP            #15
+00002796  704B                    1375                  MOVE.L          #75,D0
+00002798  7200                    1376                  MOVE.L          #0,D1
+0000279A  4E4F                    1377                  TRAP            #15
+0000279C                          1378                  
+0000279C  2439 00003272           1379                  MOVE.L          LH2_X,D2                ;FOR SCORE
+000027A2  94B9 00003256           1380                  SUB.L           HAND_DI,D2
+000027A8  2639 0000324A           1381                  MOVE.L          RH1_Y,D3
+000027AE  D6B9 00003256           1382                  ADD.L           HAND_DI,D3
+000027B4  2839 0000326E           1383                  MOVE.L          LH1_Y,D4
+000027BA  98B9 00003256           1384                  SUB.L           HAND_DI,D4
+000027C0  2239 00003272           1385                  MOVE.L          LH2_X,D1
+000027C6  D2B9 00003296           1386                  ADD.L           BHL2_W,D1
+000027CC  D2B9 00003296           1387                  ADD.L           BHL2_W,D1
+000027D2  D2B9 0000323E           1388                  ADD.L           B_W,D1
+000027D8  0681 0000003C           1389                  ADD.L           #60,D1
+000027DE  52B9 00003364           1390                  ADD.L           #1,P2RL
+000027E4                          1391                  
+000027E4                          1392                  IF.L LH2_Y <GT> D3 AND.L LH2_Y <LO> D4 THEN         ;score
+000027F8                          1393                  IF.L IS_INVERSED <EQ> #1 THEN
+00002806                          1394                  IF.L D1 <GT> HEAD1_X THEN
+00002810  52B9 00003316           1395                  ADD.L           #1,P2_SCORE
+00002816  04B9 0000000E 00003348  1396                  SUB.L           #14,H1_X
+00002820  43F9 0000336C           1397                  LEA             punch,A1                ;sound of score
+00002826  7200                    1398                  MOVE.L          #0,D1
+00002828  704A                    1399                  MOVE.L          #74,D0
+0000282A  4E4F                    1400                  TRAP            #15
+0000282C  704B                    1401                  MOVE.L          #75,D0
+0000282E  7200                    1402                  MOVE.L          #0,D1
+00002830  4E4F                    1403                  TRAP            #15
+00002832                          1404                  IF.L B1_X <LO> #535 THEN                ; throw the other player in inversed
+00002840  06B9 00000032 0000322E  1405                  ADD.L           #50,B1_X
+0000284A  06B9 00000032 00003246  1406                  ADD.L           #50,RH1_X
+00002854  06B9 00000032 0000325A  1407                  ADD.L           #50,HEAD1_X
+0000285E  06B9 00000032 0000326A  1408                  ADD.L           #50,LH1_X
+00002868  06B9 00000032 0000327A  1409                  ADD.L           #50,BHR1_X
+00002872  06B9 00000032 00003350  1410                  ADD.L           #50,BHL1_X
+0000287C                          1411                  ENDI
+0000287C  04B9 00000032 0000324A  1412                  SUB.L           #50,RH1_Y
+00002886  04B9 00000032 0000325E  1413                  SUB.L           #50,HEAD1_Y
+00002890  04B9 00000032 0000326E  1414                  SUB.L           #50,LH1_Y
+0000289A  04B9 00000032 0000327E  1415                  SUB.L           #50,BHR1_Y
+000028A4  04B9 00000032 00003354  1416                  SUB.L           #50,BHL1_Y
+000028AE  04B9 00000032 00003232  1417                  SUB.L           #50,B1_Y
+000028B8                          1418                  
+000028B8                          1419  
+000028B8                          1420                  ENDI
+000028B8                          1421                  ENDI
+000028B8  4A42                    1422                  TST             D2
+000028BA                          1423                  IF.L IS_INVERSED <EQ> #0 THEN
+000028C8                          1424                  IF.L D2 <LO> HEAD1_X THEN
+000028D2  52B9 00003316           1425                  ADD.L           #1,P2_SCORE
+000028D8  04B9 0000000E 00003348  1426                  SUB.L           #14,H1_X
+000028E2  43F9 0000336C           1427                  LEA             punch,A1                ;sound of score
+000028E8  7200                    1428                  MOVE.L          #0,D1
+000028EA  704A                    1429                  MOVE.L          #74,D0
+000028EC  4E4F                    1430                  TRAP            #15
+000028EE  704B                    1431                  MOVE.L          #75,D0
+000028F0  7200                    1432                  MOVE.L          #0,D1
+000028F2  4E4F                    1433                  TRAP            #15
+000028F4                          1434                  IF.L B1_X <GT> #60 THEN                 ; throw other player in normal
+00002902  04B9 00000032 0000322E  1435                  SUB.L           #50,B1_X
+0000290C  04B9 00000032 00003246  1436                  SUB.L           #50,RH1_X
+00002916  04B9 00000032 0000325A  1437                  SUB.L           #50,HEAD1_X
+00002920  04B9 00000032 0000326A  1438                  SUB.L           #50,LH1_X
+0000292A  04B9 00000032 0000327A  1439                  SUB.L           #50,BHR1_X
+00002934  04B9 00000032 00003350  1440                  SUB.L           #50,BHL1_X
+0000293E                          1441                  ELSE
+00002942  23FC 00000019 0000322E  1442                  MOVE.L          #25,B1_X
+0000294C  23FC 0000003C 00003246  1443                  MOVE.L          #60,RH1_X
+00002956  23FC 0000000F 0000325A  1444                  MOVE.L          #15,HEAD1_X
+00002960  23FC 0000003C 0000326A  1445                  MOVE.L          #60,LH1_X
+0000296A  23FC 00000019 0000327A  1446                  MOVE.L          #25,BHR1_X
+00002974  23FC 00000019 00003350  1447                  MOVE.L          #25,BHL1_X
+0000297E                          1448                  ENDI
+0000297E  04B9 00000032 0000324A  1449                  SUB.L           #50,RH1_Y
+00002988  04B9 00000032 0000325E  1450                  SUB.L           #50,HEAD1_Y
+00002992  04B9 00000032 0000326E  1451                  SUB.L           #50,LH1_Y
+0000299C  04B9 00000032 0000327E  1452                  SUB.L           #50,BHR1_Y
+000029A6  04B9 00000032 00003354  1453                  SUB.L           #50,BHL1_Y
+000029B0  04B9 00000032 00003232  1454                  SUB.L           #50,B1_Y
+000029BA                          1455  
+000029BA                          1456  
+000029BA                          1457                  ENDI
+000029BA                          1458                  ENDI
+000029BA                          1459                  ENDI
+000029BA                          1460  
+000029BA                          1461  PUNCHRR2                                    ;box return to original
+000029BA  53B9 00003296           1462                  SUB.L           #1,BHL2_W
+000029C0  52B9 00003358           1463                  ADD.L           #1,BHL2_X
+000029C6  52B9 00003272           1464                  ADD.L           #1,LH2_X
+000029CC  538B                    1465                  SUB.L           #1,A3
+000029CE  6100 E72C               1466                  BSR             PAINT
+000029D2  B7FC 00000000           1467                  CMP.L           #0,A3
+000029D8  66E0                    1468                  BNE             PUNCHRR2
+000029DA                          1469                  
+000029DA                          1470                  ENDI
+000029DA                          1471                  ENDI
+000029DA                          1472                  
+000029DA                          1473                  
+000029DA  0801 0010               1474                  BTST            #16,D1
+000029DE                          1475                  IF <NE> THEN                ;FOR BOXING WITH LEFT HAND
+000029E2                          1476                  IF.L P2RL <EQ> #1 THEN      ;for not punch with same hand two times
+000029F0                          1477  PUNCHGL2
+000029F0  52B9 00003292           1478                  ADD.L           #1,BHR2_W
+000029F6  53B9 00003282           1479                  SUB.L           #1,BHR2_X
+000029FC  53B9 0000324E           1480                  SUB.L           #1,RH2_X
+00002A02  528B                    1481                  ADD.L           #1,A3
+00002A04  6100 E6F6               1482                  BSR             PAINT
+00002A08  B7FC 0000003C           1483                  CMP.L           #60,A3
+00002A0E  66E0                    1484                  BNE             PUNCHGL2
+00002A10                          1485                  
+00002A10  103C 0017               1486                  MOVE.B          #23,D0                  ;delay to reduce cpu workload
+00002A14  720D                    1487                  MOVE.L          #13,D1                  ;delay 13/100 sec
+00002A16  4E4F                    1488                  TRAP            #15                     ;execute delay
+00002A18  43F9 00003376           1489                  LEA             WOOSH,A1                ;sound of punching
+00002A1E  7200                    1490                  MOVE.L          #0,D1
+00002A20  704A                    1491                  MOVE.L          #74,D0
+00002A22  4E4F                    1492                  TRAP            #15
+00002A24  704B                    1493                  MOVE.L          #75,D0
+00002A26  7200                    1494                  MOVE.L          #0,D1
+00002A28  4E4F                    1495                  TRAP            #15
+00002A2A                          1496                  
+00002A2A  2439 0000324E           1497                  MOVE.L          RH2_X,D2                ;FOR SCORE
+00002A30  94B9 00003256           1498                  SUB.L           HAND_DI,D2
+00002A36  2639 0000324A           1499                  MOVE.L          RH1_Y,D3
+00002A3C  D6B9 00003256           1500                  ADD.L           HAND_DI,D3
+00002A42  2839 0000326E           1501                  MOVE.L          LH1_Y,D4
+00002A48  98B9 00003256           1502                  SUB.L           HAND_DI,D4
+00002A4E  2239 0000324E           1503                  MOVE.L          RH2_X,D1
+00002A54  D2B9 00003292           1504                  ADD.L           BHR2_W,D1
+00002A5A  D2B9 00003292           1505                  ADD.L           BHR2_W,D1
+00002A60  D2B9 0000323E           1506                  ADD.L           B_W,D1
+00002A66  0681 0000003C           1507                  ADD.L           #60,D1
+00002A6C  53B9 00003364           1508                  SUB.L           #1,P2RL
+00002A72                          1509                 
+00002A72                          1510                  IF.L RH2_Y <GT> D3 AND.L RH2_Y <LO> D4 THEN
+00002A86                          1511                  IF.L IS_INVERSED <EQ> #1 THEN
+00002A94                          1512                  IF.L D1 <GT> HEAD1_X THEN
+00002A9E  52B9 00003316           1513                  ADD.L           #1,P2_SCORE
+00002AA4  04B9 0000000E 00003348  1514                  SUB.L           #14,H1_X
+00002AAE  43F9 0000336C           1515                  LEA             punch,A1                ;sound of score
+00002AB4  7200                    1516                  MOVE.L          #0,D1
+00002AB6  704A                    1517                  MOVE.L          #74,D0
+00002AB8  4E4F                    1518                  TRAP            #15
+00002ABA  704B                    1519                  MOVE.L          #75,D0
+00002ABC  7200                    1520                  MOVE.L          #0,D1
+00002ABE  4E4F                    1521                  TRAP            #15
+00002AC0                          1522                  IF.L B1_X <LO> #535 THEN                ;other player throw in inversed
+00002ACE  06B9 00000032 0000322E  1523                  ADD.L           #50,B1_X
+00002AD8  06B9 00000032 00003246  1524                  ADD.L           #50,RH1_X
+00002AE2  06B9 00000032 0000325A  1525                  ADD.L           #50,HEAD1_X
+00002AEC  06B9 00000032 0000326A  1526                  ADD.L           #50,LH1_X
+00002AF6  06B9 00000032 0000327A  1527                  ADD.L           #50,BHR1_X
+00002B00  06B9 00000032 00003350  1528                  ADD.L           #50,BHL1_X
+00002B0A                          1529                  ENDI
+00002B0A  06B9 00000032 0000324A  1530                  ADD.L           #50,RH1_Y
+00002B14  06B9 00000032 0000325E  1531                  ADD.L           #50,HEAD1_Y
+00002B1E  06B9 00000032 0000326E  1532                  ADD.L           #50,LH1_Y
+00002B28  06B9 00000032 0000327E  1533                  ADD.L           #50,BHR1_Y
+00002B32  06B9 00000032 00003354  1534                  ADD.L           #50,BHL1_Y
+00002B3C  06B9 00000032 00003232  1535                  ADD.L           #50,B1_Y
+00002B46                          1536  
+00002B46                          1537                  ENDI
+00002B46                          1538                  ENDI
+00002B46                          1539                  IF.L IS_INVERSED <EQ> #0 THEN
+00002B54                          1540                  IF.L D2 <LO> HEAD1_X THEN
+00002B5E  52B9 00003316           1541                  ADD.L           #1,P2_SCORE
+00002B64  04B9 0000000E 00003348  1542                  SUB.L           #14,H1_X
+00002B6E  43F9 0000336C           1543                  LEA             punch,A1                ;sound of score
+00002B74  7200                    1544                  MOVE.L          #0,D1
+00002B76  704A                    1545                  MOVE.L          #74,D0
+00002B78  4E4F                    1546                  TRAP            #15
+00002B7A  704B                    1547                  MOVE.L          #75,D0
+00002B7C  7200                    1548                  MOVE.L          #0,D1
+00002B7E  4E4F                    1549                  TRAP            #15
+00002B80                          1550                  IF.L B1_X <GT> #60 THEN                 ;other player throw in normal
+00002B8E  04B9 00000032 0000322E  1551                  SUB.L           #50,B1_X
+00002B98  04B9 00000032 00003246  1552                  SUB.L           #50,RH1_X
+00002BA2  04B9 00000032 0000325A  1553                  SUB.L           #50,HEAD1_X
+00002BAC  04B9 00000032 0000326A  1554                  SUB.L           #50,LH1_X
+00002BB6  04B9 00000032 0000327A  1555                  SUB.L           #50,BHR1_X
+00002BC0  04B9 00000032 00003350  1556                  SUB.L           #50,BHL1_X
+00002BCA                          1557                  ELSE
+00002BCE  23FC 00000019 0000322E  1558                  MOVE.L          #25,B1_X
+00002BD8  23FC 0000003C 00003246  1559                  MOVE.L          #60,RH1_X
+00002BE2  23FC 0000000F 0000325A  1560                  MOVE.L          #15,HEAD1_X
+00002BEC  23FC 0000003C 0000326A  1561                  MOVE.L          #60,LH1_X
+00002BF6  23FC 00000019 0000327A  1562                  MOVE.L          #25,BHR1_X
+00002C00  23FC 00000019 00003350  1563                  MOVE.L          #25,BHL1_X
+00002C0A                          1564                  ENDI
+00002C0A  06B9 00000032 0000324A  1565                  ADD.L           #50,RH1_Y
+00002C14  06B9 00000032 0000325E  1566                  ADD.L           #50,HEAD1_Y
+00002C1E  06B9 00000032 0000326E  1567                  ADD.L           #50,LH1_Y
+00002C28  06B9 00000032 0000327E  1568                  ADD.L           #50,BHR1_Y
+00002C32  06B9 00000032 00003354  1569                  ADD.L           #50,BHL1_Y
+00002C3C  06B9 00000032 00003232  1570                  ADD.L           #50,B1_Y
+00002C46                          1571  
+00002C46                          1572                  
+00002C46                          1573  
+00002C46                          1574                  ENDI
+00002C46                          1575                  ENDI
+00002C46                          1576                  ENDI
+00002C46                          1577                  
+00002C46                          1578  
+00002C46                          1579  PUNCHRL2                                        ;left box returns to original
+00002C46  53B9 00003292           1580                  SUB.L           #1,BHR2_W
+00002C4C  52B9 00003282           1581                  ADD.L           #1,BHR2_X
+00002C52  52B9 0000324E           1582                  ADD.L           #1,RH2_X
+00002C58  538B                    1583                  SUB.L           #1,A3
+00002C5A  6100 E4A0               1584                  BSR             PAINT
+00002C5E  B7FC 00000000           1585                  CMP.L           #0,A3
+00002C64  66E0                    1586                  BNE             PUNCHRL2
+00002C66                          1587                  ENDI
+00002C66                          1588                  ENDI
+00002C66                          1589  
+00002C66                          1590                  
+00002C66  4E75                    1591                  RTS
+00002C68                          1592                  
+00002C68                          1593                  
+00002C68                          1594  *******************************************************************************************************************
+00002C68                          1595  *******************************************************************************************************************
+00002C68                          1596  
+00002C68                          1597  SCORE:                                                  ;calculating score to win round and game
+00002C68                          1598                  IF.L P1_SCORE <EQ> #20 THEN             p1 win a round
+00002C76  52B9 0000331A           1599                  ADD.L           #1,P1_ROUND
+00002C7C                          1600                  IF.L P1_ROUND <EQ> #2 THEN              ;p1 win the game
+00002C8A  6100 04BA               1601                  BSR             GAME_OVER
+00002C8E                          1602                  ENDI
+00002C8E                          1603                  
+00002C8E                          1604                                                          *;congratulation screen
+00002C8E                          1605  
+00002C8E                          1606  *CLEAR SCREEN
+00002C8E  103C 0051               1607                  MOVE.B          #81,D0                  ; Change fill color
+00002C92  223C 00D9992F           1608                  MOVE.L          #$00D9992F,D1           ; color
+00002C98  4E4F                    1609                  TRAP            #15  
+00002C9A  7057                    1610                  MOVE.L          #87,D0                 ;  rectangle
+00002C9C  7200                    1611                  MOVE.L          #0,D1                   ;  left X position to 0          
+00002C9E  7400                    1612                  MOVE.L          #0,D2                  ;  top y position to 0
+00002CA0  263C 00000280           1613                  MOVE.L          #640,D3                 ;  width to 640
+00002CA6  283C 000001E0           1614                  MOVE.L          #480,D4                ;  height to 480
+00002CAC  4E4F                    1615                  TRAP            #15 
+00002CAE                          1616                  
+00002CAE                          1617                  *CHANGE FONT SIZE
+00002CAE  303C 0015               1618                  MOVE            #21,D0                  ; Task 21 changes font size
+00002CB2  223C 0000FF00           1619                  MOVE.L          #$0000FF00,D1           ; red color
+00002CB8  243C 05140005           1620                  MOVE.L          #$05140005,D2           ; Lucidia Sans Typewriter size=18
+00002CBE  4E4F                    1621                  TRAP            #15                 
+00002CC0                          1622                  
+00002CC0                          1623                  *DRAW STRING
+00002CC0  43F9 0000329E           1624                  LEA             P1_WIN,A1
+00002CC6  705F                    1625                  MOVE.L          #95,D0                  ; Draw string located at A1
+00002CC8  7264                    1626                  MOVE.L          #100,D1                 ;  x position of string
+00002CCA  243C 00000096           1627                  MOVE.L          #150,D2                 ;  y position of string
+00002CD0  4E4F                    1628                  TRAP            #15 
+00002CD2  43F9 00003322           1629                  LEA             CONGRA,A1
+00002CD8  705F                    1630                  MOVE.L          #95,D0                  ; Draw string located at A1
+00002CDA  223C 000000AA           1631                  MOVE.L          #170,D1                 ;  x position of string
+00002CE0  243C 000000C8           1632                  MOVE.L          #200,D2                 ;  y position of string
+00002CE6  4E4F                    1633                  TRAP            #15                     
+00002CE8                          1634                  
+00002CE8                          1635                  * DRAW FROM BUFFER
+00002CE8  303C 005E               1636                  MOVE            #94,D0                  ; Draw from buffer
+00002CEC  4E4F                    1637                  TRAP            #15                     
+00002CEE                          1638                  
+00002CEE                          1639                  
+00002CEE                          1640  *               MOVE.B          #9,D0                   ; Halt simulator
+00002CEE                          1641  *               TRAP            #15
+00002CEE                          1642                  
+00002CEE  103C 0017               1643                  MOVE.B          #23,D0                  ;delay to reduce cpu workload
+00002CF2  223C 0000012C           1644                  MOVE.L          #300,D1                 ;delay 3 sec
+00002CF8  4E4F                    1645                  TRAP            #15                     ;execute delay
+00002CFA                          1646                  
+00002CFA                          1647                                                          ;return everything to original place
+00002CFA                          1648                  
+00002CFA  23FC 0000000A 0000322E  1649                  MOVE.L #10,B1_X
+00002D04  23FC 000000C8 00003232  1650                  MOVE.L #200,B1_Y
+00002D0E  23FC 00000258 00003236  1651                  MOVE.L #600,B2_X
+00002D18  23FC 000000C8 0000323A  1652                  MOVE.L #200,B2_Y
+00002D22  23FC 0000001E 0000323E  1653                  MOVE.L #30,B_W
+00002D2C  23FC 00000096 00003242  1654                  MOVE.L #150,B_H
+00002D36                          1655                  
+00002D36                          1656                  
+00002D36  23FC 0000002D 00003246  1657                  MOVE.L #45,RH1_X
+00002D40  23FC 000000AA 0000324A  1658                  MOVE.L #170,RH1_Y
+00002D4A  23FC 00000217 0000324E  1659                  MOVE.L #535,RH2_X
+00002D54  23FC 000000AA 00003252  1660                  MOVE.L #170,RH2_Y
+00002D5E  23FC 0000003C 00003256  1661                  MOVE.L #60,HAND_DI
+00002D68                          1662                  
+00002D68                          1663                  
+00002D68  23FC 00000000 0000325A  1664                  MOVE.L #0,HEAD1_X
+00002D72  23FC 000000F5 0000325E  1665                  MOVE.L #245,HEAD1_Y
+00002D7C  23FC 00000244 00003262  1666                  MOVE.L #580,HEAD2_X
+00002D86  23FC 000000F5 00003266  1667                  MOVE.L #245,HEAD2_Y
+00002D90                          1668                  
+00002D90                          1669                  
+00002D90  23FC 0000002D 0000326A  1670                  MOVE.L #45,LH1_X
+00002D9A  23FC 00000140 0000326E  1671                  MOVE.L #320,LH1_Y
+00002DA4  23FC 00000217 00003272  1672                  MOVE.L #535,LH2_X
+00002DAE  23FC 00000140 00003276  1673                  MOVE.L #320,LH2_Y
+00002DB8                          1674                  
+00002DB8                          1675                  
+00002DB8  23FC 0000000A 0000327A  1676                  MOVE.L #10,BHR1_X
+00002DC2  23FC 000000C3 0000327E  1677                  MOVE.L #195,BHR1_Y
+00002DCC  23FC 00000253 00003282  1678                  MOVE.L #595,BHR2_X
+00002DD6  23FC 000000C3 00003286  1679                  MOVE.L #195,BHR2_Y
+00002DE0  23FC 00000023 0000328A  1680                  MOVE.L #35,BHR1_W
+00002DEA  23FC 00000023 0000328E  1681                  MOVE.L #35,BHL1_W
+00002DF4  23FC 00000023 00003292  1682                  MOVE.L #35,BHR2_W
+00002DFE  23FC 00000023 00003296  1683                  MOVE.L #35,BHL2_W
+00002E08                          1684                  
+00002E08                          1685                  
+00002E08  23FC 0000000A 0000329A  1686                  MOVE.L #10,BH_H
+00002E12                          1687                  
+00002E12  23FC 0000012C 00003348  1688                  MOVE.L #300,H1_X
+00002E1C  23FC 00000154 0000334C  1689                  MOVE.L #340,H2_X
+00002E26                          1690                  
+00002E26                          1691                  
+00002E26  23FC 0000000A 00003350  1692                  MOVE.L #10,BHL1_X
+00002E30  23FC 00000159 00003354  1693                  MOVE.L #345,BHL1_Y
+00002E3A  23FC 00000253 00003358  1694                  MOVE.L #595,BHL2_X
+00002E44  23FC 00000159 0000335C  1695                  MOVE.L #345,BHL2_Y
+00002E4E                          1696                  
+00002E4E                          1697                  
+00002E4E  23FC 00000000 00003368  1698                  MOVE.L #0,IS_INVERSED
+00002E58  23FC 00000000 00003312  1699                  MOVE.L          #0,P1_SCORE
+00002E62  23FC 00000000 00003316  1700                  MOVE.L          #0,P2_SCORE
+00002E6C                          1701                  
+00002E6C                          1702                  IF.L P1_ROUND <EQ> #1 AND.L P2_ROUND <EQ> #1 THEN
+00002E88  43F9 00003396           1703                  LEA             ROUND3,A1                ;sound
+00002E8E  7200                    1704                  MOVE.L          #0,D1
+00002E90  704A                    1705                  MOVE.L          #74,D0
+00002E92  4E4F                    1706                  TRAP            #15
+00002E94  704B                    1707                  MOVE.L          #75,D0
+00002E96  7200                    1708                  MOVE.L          #0,D1
+00002E98  4E4F                    1709                  TRAP            #15
+00002E9A                          1710                  ELSE
+00002E9E                          1711                  IF.L P1_ROUND <EQ> #1 OR.L P2_ROUND <EQ> #1 THEN
+00002EB8  43F9 0000338B           1712                  LEA             ROUND2,A1                ;sound
+00002EBE  7200                    1713                  MOVE.L          #0,D1
+00002EC0  704A                    1714                  MOVE.L          #74,D0
+00002EC2  4E4F                    1715                  TRAP            #15
+00002EC4  704B                    1716                  MOVE.L          #75,D0
+00002EC6  7200                    1717                  MOVE.L          #0,D1
+00002EC8  4E4F                    1718                  TRAP            #15
+00002ECA                          1719                  ENDI
+00002ECA                          1720                  ENDI
+00002ECA                          1721  
+00002ECA                          1722                  
+00002ECA                          1723                  ENDI
+00002ECA                          1724                  
+00002ECA                          1725                  IF.L P2_SCORE <EQ> #20 THEN             ;p2 win a round
+00002ED8  52B9 0000331E           1726                  ADD.L           #1,P2_ROUND
+00002EDE                          1727                  IF.L P2_ROUND <EQ> #2 THEN              ;p2 win the game
+00002EEC  6100 0258               1728                  BSR             GAME_OVER
+00002EF0                          1729                  ENDI
+00002EF0                          1730                  *CLEAR SCREEN                           ; congratulation screen
+00002EF0  103C 0051               1731                  MOVE.B          #81,D0                  ; Change fill color
+00002EF4  223C 00D9992F           1732                  MOVE.L          #$00D9992F,D1           ; color
+00002EFA  4E4F                    1733                  TRAP            #15  
+00002EFC  7057                    1734                  MOVE.L          #87,D0                 ;  rectangle
+00002EFE  7200                    1735                  MOVE.L          #0,D1                   ;  left X position to 0
+00002F00  7400                    1736                  MOVE.L          #0,D2                  ;  top y position to 0
+00002F02  263C 00000280           1737                  MOVE.L          #640,D3                 ;  width to 640
+00002F08  283C 000001E0           1738                  MOVE.L          #480,D4                ;  height to 480
+00002F0E  4E4F                    1739                  TRAP            #15 
+00002F10                          1740                  
+00002F10                          1741                  *CHANGE FONT SIZE
+00002F10  303C 0015               1742                  MOVE            #21,D0                  ; Task 21 changes font size
+00002F14  223C 0000FF00           1743                  MOVE.L          #$0000FF00,D1           ; red color
+00002F1A  243C 05140005           1744                  MOVE.L          #$05140005,D2           ; Lucidia Sans Typewriter size=18
+00002F20  4E4F                    1745                  TRAP            #15                 
+00002F22                          1746                  
+00002F22                          1747                  *DRAW STRING
+00002F22  43F9 000032BC           1748                  LEA             P2_WIN,A1
+00002F28  705F                    1749                  MOVE.L          #95,D0                  ; Draw string located at A1
+00002F2A  7264                    1750                  MOVE.L          #100,D1                 ;  x position of string
+00002F2C  243C 00000096           1751                  MOVE.L          #150,D2                 ;  y position of string
+00002F32  4E4F                    1752                  TRAP            #15 
+00002F34  43F9 00003322           1753                  LEA             CONGRA,A1
+00002F3A  705F                    1754                  MOVE.L          #95,D0                  ; Draw string located at A1
+00002F3C  223C 000000AA           1755                  MOVE.L          #170,D1                 ;  x position of string
+00002F42  243C 000000C8           1756                  MOVE.L          #200,D2                 ;  y position of string
+00002F48  4E4F                    1757                  TRAP            #15                     
+00002F4A                          1758                  
+00002F4A                          1759                  
+00002F4A                          1760                  * DRAW FROM BUFFER
+00002F4A  303C 005E               1761                   MOVE            #94,D0                 ; Draw from buffer
+00002F4E  4E4F                    1762                   TRAP            #15                     
+00002F50                          1763  
+00002F50                          1764                  
+00002F50  103C 0017               1765                  MOVE.B          #23,D0                  ;delay to reduce cpu workload
+00002F54  223C 000001F4           1766                  MOVE.L          #500,D1                 ;delay 1/100 sec
+00002F5A  4E4F                    1767                  TRAP            #15                     ;execute delay
+00002F5C                          1768                      
+00002F5C                          1769                                                          ;return everything to original place
+00002F5C  23FC 0000000A 0000322E  1770                  MOVE.L #10,B1_X
+00002F66  23FC 000000C8 00003232  1771                  MOVE.L #200,B1_Y
+00002F70  23FC 00000258 00003236  1772                  MOVE.L #600,B2_X
+00002F7A  23FC 000000C8 0000323A  1773                  MOVE.L #200,B2_Y
+00002F84  23FC 0000001E 0000323E  1774                  MOVE.L #30,B_W
+00002F8E  23FC 00000096 00003242  1775                  MOVE.L #150,B_H
+00002F98                          1776                  
+00002F98                          1777                  
+00002F98  23FC 0000002D 00003246  1778                  MOVE.L #45,RH1_X
+00002FA2  23FC 000000AA 0000324A  1779                  MOVE.L #170,RH1_Y
+00002FAC  23FC 00000217 0000324E  1780                  MOVE.L #535,RH2_X
+00002FB6  23FC 000000AA 00003252  1781                  MOVE.L #170,RH2_Y
+00002FC0  23FC 0000003C 00003256  1782                  MOVE.L #60,HAND_DI
+00002FCA                          1783                  
+00002FCA                          1784                  
+00002FCA  23FC 00000000 0000325A  1785                  MOVE.L #0,HEAD1_X
+00002FD4  23FC 000000F5 0000325E  1786                  MOVE.L #245,HEAD1_Y
+00002FDE  23FC 00000244 00003262  1787                  MOVE.L #580,HEAD2_X
+00002FE8  23FC 000000F5 00003266  1788                  MOVE.L #245,HEAD2_Y
+00002FF2                          1789                  
+00002FF2                          1790                  
+00002FF2  23FC 0000002D 0000326A  1791                  MOVE.L #45,LH1_X
+00002FFC  23FC 00000140 0000326E  1792                  MOVE.L #320,LH1_Y
+00003006  23FC 00000217 00003272  1793                  MOVE.L #535,LH2_X
+00003010  23FC 00000140 00003276  1794                  MOVE.L #320,LH2_Y
+0000301A                          1795                  
+0000301A                          1796                  
+0000301A  23FC 0000000A 0000327A  1797                  MOVE.L #10,BHR1_X
+00003024  23FC 000000C3 0000327E  1798                  MOVE.L #195,BHR1_Y
+0000302E  23FC 00000253 00003282  1799                  MOVE.L #595,BHR2_X
+00003038  23FC 000000C3 00003286  1800                  MOVE.L #195,BHR2_Y
+00003042  23FC 00000023 0000328A  1801                  MOVE.L #35,BHR1_W
+0000304C  23FC 00000023 0000328E  1802                  MOVE.L #35,BHL1_W
+00003056  23FC 00000023 00003292  1803                  MOVE.L #35,BHR2_W
+00003060  23FC 00000023 00003296  1804                  MOVE.L #35,BHL2_W
+0000306A                          1805                  
+0000306A                          1806                  
+0000306A  23FC 0000000A 0000329A  1807                  MOVE.L #10,BH_H
+00003074                          1808                  
+00003074  23FC 0000012C 00003348  1809                  MOVE.L #300,H1_X
+0000307E  23FC 00000154 0000334C  1810                  MOVE.L #340,H2_X
+00003088                          1811                  
+00003088                          1812                  
+00003088  23FC 0000000A 00003350  1813                  MOVE.L #10,BHL1_X
+00003092  23FC 00000159 00003354  1814                  MOVE.L #345,BHL1_Y
+0000309C  23FC 00000253 00003358  1815                  MOVE.L #595,BHL2_X
+000030A6  23FC 00000159 0000335C  1816                  MOVE.L #345,BHL2_Y
+000030B0                          1817                  
+000030B0                          1818                  
+000030B0  23FC 00000000 00003368  1819                  MOVE.L #0,IS_INVERSED
+000030BA  23FC 00000000 00003312  1820                  MOVE.L          #0,P1_SCORE
+000030C4  23FC 00000000 00003316  1821                  MOVE.L          #0,P2_SCORE
+000030CE                          1822                  
+000030CE                          1823                  IF.L P1_ROUND <EQ> #1 AND.L P2_ROUND <EQ> #1 THEN           ;round 3 sound
+000030EA  43F9 00003396           1824                  LEA             ROUND3,A1                ;sound
+000030F0  7200                    1825                  MOVE.L          #0,D1
+000030F2  704A                    1826                  MOVE.L          #74,D0
+000030F4  4E4F                    1827                  TRAP            #15
+000030F6  704B                    1828                  MOVE.L          #75,D0
+000030F8  7200                    1829                  MOVE.L          #0,D1
+000030FA  4E4F                    1830                  TRAP            #15
+000030FC  103C 0017               1831                  MOVE.B          #23,D0                  ;delay to reduce cpu workload
+00003100  223C 000000C8           1832                  MOVE.L          #200,D1                 ;delay 1/100 sec
+00003106  4E4F                    1833                  TRAP            #15                     ;execute delay
+00003108                          1834                  ELSE
+0000310C                          1835                  IF.L P1_ROUND <EQ> #1 OR.L P2_ROUND <EQ> #1 THEN            ;round 3 sound
+00003126  43F9 0000338B           1836                  LEA             ROUND2,A1                ;sound
+0000312C  7200                    1837                  MOVE.L          #0,D1
+0000312E  704A                    1838                  MOVE.L          #74,D0
+00003130  4E4F                    1839                  TRAP            #15
+00003132  704B                    1840                  MOVE.L          #75,D0
+00003134  7200                    1841                  MOVE.L          #0,D1
+00003136  4E4F                    1842                  TRAP            #15
+00003138  103C 0017               1843                  MOVE.B          #23,D0                  ;delay to reduce cpu workload
+0000313C  223C 000000C8           1844                  MOVE.L          #200,D1                 ;delay 1/100 sec
+00003142  4E4F                    1845                  TRAP            #15                     ;execute delay
+00003144                          1846                  ENDI
+00003144                          1847                  ENDI
+00003144                          1848                  ENDI
+00003144                          1849  
+00003144                          1850                  
+00003144  4E75                    1851  s               RTS
+00003146                          1852  
+00003146                          1853  
+00003146                          1854  
+00003146                          1855  
+00003146                          1856  *******************************************************************************************************************
+00003146                          1857  *******************************************************************************************************************
+00003146                          1858  
+00003146                          1859  GAME_OVER:                                              ;game over screen
+00003146                          1860  
+00003146                          1861                  IF.L P1_ROUND <EQ> #2 THEN              ;p1 win
+00003154                          1862                  *CLEAR SCREEN
+00003154  103C 0051               1863                  MOVE.B          #81,D0                  ; Change fill color
+00003158  223C 00D9992F           1864                  MOVE.L          #$00D9992F,D1           ; color
+0000315E  4E4F                    1865                  TRAP            #15  
+00003160  7057                    1866                  MOVE.L          #87,D0                 ;  rectangle
+00003162  7200                    1867                  MOVE.L          #0,D1                   ;  left X position to 0
+00003164  7400                    1868                  MOVE.L          #0,D2                  ;  top y position to 0
+00003166  263C 00000280           1869                  MOVE.L          #640,D3                 ;  width to 640
+0000316C  283C 000001E0           1870                  MOVE.L          #480,D4                ;  height to 480
+00003172  4E4F                    1871                  TRAP            #15 
+00003174                          1872                  
+00003174                          1873                  *CHANGE FONT SIZE
+00003174  303C 0015               1874                  MOVE            #21,D0                  ; Task 21 changes font size
+00003178  223C 0000FF00           1875                  MOVE.L          #$0000FF00,D1           ; red color
+0000317E  243C 05140005           1876                  MOVE.L          #$05140005,D2           ; Lucidia Sans Typewriter size=18
+00003184  4E4F                    1877                  TRAP            #15                 
+00003186                          1878                  
+00003186                          1879                  *DRAW STRING
+00003186  43F9 000032DA           1880                  LEA             P1_WINGAME,A1
+0000318C  705F                    1881                  MOVE.L          #95,D0                  ; Draw string located at A1
+0000318E  7264                    1882                  MOVE.L          #100,D1                 ;  x position of string
+00003190  243C 00000096           1883                  MOVE.L          #150,D2                 ;  y position of string
+00003196  4E4F                    1884                  TRAP            #15 
+00003198  43F9 00003322           1885                  LEA             CONGRA,A1
+0000319E  705F                    1886                  MOVE.L          #95,D0                  ; Draw string located at A1
+000031A0  223C 000000AA           1887                  MOVE.L          #170,D1                 ;  x position of string
+000031A6  243C 000000C8           1888                  MOVE.L          #200,D2                 ;  y position of string
+000031AC  4E4F                    1889                  TRAP            #15                     
+000031AE                          1890                  
+000031AE                          1891                  
+000031AE                          1892                  * DRAW FROM BUFFER
+000031AE  303C 005E               1893                   MOVE            #94,D0                 ; Draw from buffer
+000031B2  4E4F                    1894                   TRAP            #15                     
+000031B4                          1895                   
+000031B4  103C 0009               1896                  MOVE.B          #9,D0                   ; Halt simulator
+000031B8  4E4F                    1897                  TRAP            #15
+000031BA                          1898                  ENDI
+000031BA                          1899                  
+000031BA                          1900                  IF.L P2_ROUND <EQ> #2 THEN              ;p2 win
+000031C8                          1901                  *CLEAR SCREEN
+000031C8  103C 0051               1902                  MOVE.B          #81,D0                  ; Change fill color
+000031CC  223C 00D9992F           1903                  MOVE.L          #$00D9992F,D1           ; color
+000031D2  4E4F                    1904                  TRAP            #15  
+000031D4  7057                    1905                  MOVE.L          #87,D0                 ;  rectangle
+000031D6  7200                    1906                  MOVE.L          #0,D1                   ;  left X position to 0
+000031D8  7400                    1907                  MOVE.L          #0,D2                  ;  top y position to 0
+000031DA  263C 00000280           1908                  MOVE.L          #640,D3                 ;  width to 640
+000031E0  283C 000001E0           1909                  MOVE.L          #480,D4                ;  height to 480
+000031E6  4E4F                    1910                  TRAP            #15 
+000031E8                          1911                  
+000031E8                          1912                  *CHANGE FONT SIZE
+000031E8  303C 0015               1913                  MOVE            #21,D0                  ; Task 21 changes font size
+000031EC  223C 0000FF00           1914                  MOVE.L          #$0000FF00,D1           ; red color
+000031F2  243C 05140005           1915                  MOVE.L          #$05140005,D2           ; Lucidia Sans Typewriter size=18
+000031F8  4E4F                    1916                  TRAP            #15                 
+000031FA                          1917                  
+000031FA                          1918                  *DRAW STRING
+000031FA  43F9 000032F6           1919                  LEA             P2_WINGAME,A1
+00003200  705F                    1920                  MOVE.L          #95,D0                  ; Draw string located at A1
+00003202  7264                    1921                  MOVE.L          #100,D1                 ;  x position of string
+00003204  243C 00000096           1922                  MOVE.L          #150,D2                 ;  y position of string
+0000320A  4E4F                    1923                  TRAP            #15 
+0000320C  43F9 00003322           1924                  LEA             CONGRA,A1
+00003212  705F                    1925                  MOVE.L          #95,D0                  ; Draw string located at A1
+00003214  223C 000000AA           1926                  MOVE.L          #170,D1                 ;  x position of string
+0000321A  243C 000000C8           1927                  MOVE.L          #200,D2                 ;  y position of string
+00003220  4E4F                    1928                  TRAP            #15                     
+00003222                          1929                  
+00003222                          1930                  
+00003222                          1931                  * DRAW FROM BUFFER
+00003222  303C 005E               1932                  MOVE            #94,D0                  ; Draw from buffer
+00003226  4E4F                    1933                  TRAP            #15
+00003228                          1934                  
+00003228  103C 0009               1935                  MOVE.B          #9,D0                   ; Halt simulator
+0000322C  4E4F                    1936                  TRAP            #15
+0000322E                          1937                  ENDI
+0000322E                          1938  
+0000322E                          1939  
+0000322E                          1940  
+0000322E                          1941  
+0000322E                          1942  
+0000322E                          1943  *******************************************************************************************************************
+0000322E                          1944  *******************************************************************************************************************
+0000322E                          1945  
+0000322E                          1946                  
+0000322E                          1947  
+0000322E                          1948  * Put variables and constants here
+0000322E                          1949  
+0000322E= 0000000A                1950  B1_X            DC.L            10                      ; p1 body starting x position
+00003232= 000000C8                1951  B1_Y            DC.L            200                     ; p1 body starting y position
+00003236= 00000258                1952  B2_X            DC.L            600                     ; p2 body starting x position
+0000323A= 000000C8                1953  B2_Y            DC.L            200                     ; p2 body starting y position
+0000323E= 0000001E                1954  B_W             DC.L            30                      ; body width
+00003242= 00000096                1955  B_H             DC.L            150                     ; body height
+00003246                          1956  
+00003246                          1957  
+00003246                          1958  
+00003246= 0000002D                1959  RH1_X           DC.L            45                      ; p1 right box starting x position
+0000324A= 000000AA                1960  RH1_Y           DC.L            170                     ; p1 right box starting y position
+0000324E= 00000217                1961  RH2_X           DC.L            535                     ; p2 right box starting x position
+00003252= 000000AA                1962  RH2_Y           DC.L            170                     ; p2 right box starting y position
+00003256= 0000003C                1963  HAND_DI         DC.L            60                      ; box diameter
+0000325A                          1964  
+0000325A                          1965  
+0000325A                          1966  
+0000325A= 00000000                1967  HEAD1_X         DC.L            0                       ; p1 head starting x position
+0000325E= 000000F5                1968  HEAD1_Y         DC.L            245                     ; p1 head starting y position
+00003262= 00000244                1969  HEAD2_X         DC.L            580                     ; p2 head starting x position
+00003266= 000000F5                1970  HEAD2_Y         DC.L            245                     ; p2 head starting y position
+0000326A                          1971  
+0000326A                          1972  
+0000326A                          1973  
+0000326A= 0000002D                1974  LH1_X           DC.L            45                      ; p1 left box starting x position
+0000326E= 00000140                1975  LH1_Y           DC.L            320                     ; p1 left box starting y position
+00003272= 00000217                1976  LH2_X           DC.L            535                     ; p2 left box starting x position
+00003276= 00000140                1977  LH2_Y           DC.L            320                     ; p2 left box starting y position
+0000327A                          1978  
+0000327A                          1979  
+0000327A= 0000000A                1980  BHR1_X          DC.L            10                      ; p1 right hand starting x position
+0000327E= 000000C3                1981  BHR1_Y          DC.L            195                     ; p1 right hand starting y position
+00003282= 00000253                1982  BHR2_X          DC.L            595                     ; p2 right hand starting x position
+00003286= 000000C3                1983  BHR2_Y          DC.L            195                     ; p2 right hand starting y position
+0000328A= 00000023                1984  BHR1_W          DC.L            35                      ; p1 right hand width1
+0000328E= 00000023                1985  BHL1_W          DC.L            35                      ; p1 left hand width1
+00003292= 00000023                1986  BHR2_W          DC.L            35                      ; p2 right hand width1
+00003296= 00000023                1987  BHL2_W          DC.L            35                      ; p2 left hand width1
+0000329A                          1988  
+0000329A= 0000000A                1989  BH_H            DC.L            10                      ; Hand height
+0000329E                          1990  
+0000329E                          1991  
+0000329E= 504C 4159 4552 2...     1992  P1_WIN          DC.W            'PLAYER 1 HAS WIN THE ROUND!',0        ; p1 win round phrase
+000032BC= 504C 4159 4552 2...     1993  P2_WIN          DC.W            'PLAYER 2 HAS WIN THE ROUND!',0        ; p2 win round phrase
+000032DA= 504C 4159 4552 2...     1994  P1_WINGAME      DC.W            'PLAYER 1 HAS WIN THE GAME!',0         ; p1 win game phrase
+000032F6= 504C 4159 4552 2...     1995  P2_WINGAME      DC.W            'PLAYER 2 HAS WIN THE GAME!',0         ; p2 win game phrase
+00003312= 00000000                1996  P1_SCORE        DC.L            0                       ;PLAYER 1 SCORE
+00003316= 00000000                1997  P2_SCORE        DC.L            0                       ;PLAYER 2 SCORE
+0000331A= 00000000                1998  P1_ROUND        DC.L            0                       ;PLAYER 1 ROUNDS WIN
+0000331E= 00000000                1999  P2_ROUND        DC.L            0                       ;PLAYER 2 ROUNDS WIN
+00003322= 434F 4E47 5241 5...     2000  CONGRA          DC.W            'CONGRATULATIONS',0                    ; congratulation phrase
+00003334                          2001  
+00003334= 504C 4159 4552 2...     2002  P1              DC.W            'PLAYER 1',0            ;PLAYER 1 PHRASE
+0000333E= 504C 4159 4552 2...     2003  P2              DC.W            'PLAYER 2',0            ;PLAYER 1 PHRASE
+00003348                          2004  
+00003348= 0000012C                2005  H1_X            DC.L            300                     ;STATING X_POSITION P1 HEALTH
+0000334C= 00000154                2006  H2_X            DC.L            340                     ;STATING X_POSITION P2 HEALTH
+00003350                          2007  
+00003350                          2008  
+00003350= 0000000A                2009  BHL1_X          DC.L            10                      ; p1 left hand starting x position
+00003354= 00000159                2010  BHL1_Y          DC.L            345                     ; p1 left hand starting y position
+00003358= 00000253                2011  BHL2_X          DC.L            595                     ; p1 left hand starting x position
+0000335C= 00000159                2012  BHL2_Y          DC.L            345                     ; p1 left hand starting y position
+00003360                          2013  
+00003360= 00000000                2014  P1RL            DC.L            0                       ;p1 right left box distribution
+00003364= 00000000                2015  P2RL            DC.L            0                       ;p1 right left box distribution
+00003368                          2016  
+00003368= 00000000                2017  IS_INVERSED     DC.L            0                       ; INVERSED DISTRIBUTION
+0000336C                          2018  
+0000336C= 70 75 6E 63 68 2E ...   2019  punch           DC.B            'punch.wav',0           ;punch score sound
+00003376= 57 4F 4F 53 48 2E ...   2020  WOOSH           DC.B            'WOOSH.wav',0           ;punch in air sound
+00003380= 52 4F 55 4E 44 31 ...   2021  ROUND1          DC.B            'ROUND1.wav',0          ;round 1 sound
+0000338B= 52 4F 55 4E 44 32 ...   2022  ROUND2          DC.B            'ROUND2.wav',0          ;round 2 sound
+00003396= 52 4F 55 4E 44 33 ...   2023  ROUND3          DC.B            'ROUND3.wav',0          ;round 3 sound
+000033A1= 52 4F 55 4E 44 31 00    2024  ROUND1S         DC.B            'ROUND1',0              ;round 1 phrase
+000033A8= 52 4F 55 4E 44 32 00    2025  ROUND2S         DC.B            'ROUND2',0              ;round 2 phrase
+000033AF= 52 4F 55 4E 44 33 00    2026  ROUND3S         DC.B            'ROUND3',0              ;round 3 phrase
+000033B6                          2027  
+000033B6= 31 30 30 00             2028  N100             DC.B            '100',0                ;number 100
+000033BA= 39 35 00                2029  N95              DC.B            '95',0                 ;number 95
+000033BD= 39 30 00                2030  N90              DC.B            '90',0                 ;number 90
+000033C0= 38 35 00                2031  N85              DC.B            '85',0                 ;number 85
+000033C3= 38 30 00                2032  N80              DC.B            '80',0                 ;number 80
+000033C6= 37 35 00                2033  N75              DC.B            '75',0                 ;number 75
+000033C9= 37 30 00                2034  N70              DC.B            '70',0                 ;number 70
+000033CC= 36 35 00                2035  N65              DC.B            '65',0                 ;number 65
+000033CF= 36 30 00                2036  N60              DC.B            '60',0                 ;number 60
+000033D2= 35 35 00                2037  N55              DC.B            '55',0                 ;number 55
+000033D5= 35 30 00                2038  N50              DC.B            '50',0                 ;number 50
+000033D8= 34 35 00                2039  N45              DC.B            '45',0                 ;number 45
+000033DB= 34 30 00                2040  N40              DC.B            '40',0                 ;number 40
+000033DE= 33 35 00                2041  N35              DC.B            '35',0                 ;number 35
+000033E1= 33 30 00                2042  N30              DC.B            '30',0                 ;number 30
+000033E4= 32 35 00                2043  N25              DC.B            '25',0                 ;number 25
+000033E7= 32 30 00                2044  N20              DC.B            '20',0                 ;number 20
+000033EA= 31 35 00                2045  N15              DC.B            '15',0                 ;number 15
+000033ED= 31 30 00                2046  N10              DC.B            '10',0                 ;number 10
+000033F0= 35 00                   2047  N5               DC.B            '5',0                  ;number 5
+000033F2                          2048  
+000033F2                          2049  
+000033F2= 0082                    2050  START_X         DC.W            130                                                                     ;text start x position
+000033F4= 0082                    2051  START_Y         DC.W            130                                                                     ;text start y position
+000033F6= 42 4F 58 49 4E 47 00    2052  START_L1        DC.B            'BOXING',0                                                              ;string 1
+000033FD= 52 55 4C 45 53 3A 00    2053  START_L2        DC.B            'RULES:',0                                                              ;string 2
+00003404= 50 4C 41 59 45 52 ...   2054  START_L3        DC.B            'PLAYERS CAN ONLY SCORE BY HITTING HIS ENEMY HEAD',0              ;string 3
+00003435= 54 48 45 20 46 49 ...   2055  START_L4        DC.B            'THE FIRST PLAYER TO SCORE TEN TIMES WINS',0                            ;string 4
+0000345E= 43 4F 4E 54 52 4F ...   2056  START_L5        DC.B            'CONTROLS:',0                                                           ;string 5
+00003468= 2D 50 4C 41 59 45 ...   2057  START_L6        DC.B            '-PLAYER 1: RIGHT HAND = G, LEFT HAND = H',0                            ;string 6
+00003491= 55 50 20 3D 20 57 ...   2058  START_L7        DC.B            'UP = W, LEFT = A, DOWN = S, RIGHT = D',0                               ;string 7
+000034B7= 2D 50 4C 41 59 45 ...   2059  START_L8        DC.B            '-PLAYER 2: RIGHT HAND = NUM 4, LEFT HAND = NUM 5',0                ;string 8
+000034E8= 55 50 20 3D 20 55 ...   2060  START_L9        DC.B            'UP = UP ARROW, LEFT = LEFT ARROW',0                                    ;string 9
+00003509= 44 4F 57 4E 20 3D ...   2061  START_L10       DC.B            'DOWN = DOWN ARROW, RIGHT = RIGHT ARROW',0                              ;string 10
+00003530= 50 52 45 53 53 20 ...   2062  START_L11       DC.B            'PRESS ENTER TO CONTINUE',0                                             ;string 11
+00003548                          2063      END    START                                                                                        ;last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+B1_X                322E
+B1_Y                3232
+B2_X                3236
+B2_Y                323A
+BHL1_W              328E
+BHL1_X              3350
+BHL1_Y              3354
+BHL2_W              3296
+BHL2_X              3358
+BHL2_Y              335C
+BHR1_W              328A
+BHR1_X              327A
+BHR1_Y              327E
+BHR2_W              3292
+BHR2_X              3282
+BHR2_Y              3286
+BH_H                329A
+B_H                 3242
+B_W                 323E
+CONGRA              3322
+GAME                1034
+GAME_OVER           3146
+H1_X                3348
+H2_X                334C
+HAND_DI             3256
+HEAD1_X             325A
+HEAD1_Y             325E
+HEAD2_X             3262
+HEAD2_Y             3266
+IS_INVERSED         3368
+KEY_CHECKP1         1AFC
+KEY_CHECKP2         1E90
+KEY_CHECKPUNCH1     21C6
+KEY_CHECKPUNCH2     273C
+LH1_X               326A
+LH1_Y               326E
+LH2_X               3272
+LH2_Y               3276
+N10                 33ED
+N100                33B6
+N15                 33EA
+N20                 33E7
+N25                 33E4
+N30                 33E1
+N35                 33DE
+N40                 33DB
+N45                 33D8
+N5                  33F0
+N50                 33D5
+N55                 33D2
+N60                 33CF
+N65                 33CC
+N70                 33C9
+N75                 33C6
+N80                 33C3
+N85                 33C0
+N90                 33BD
+N95                 33BA
+P1                  3334
+P1RL                3360
+P1_ROUND            331A
+P1_SCORE            3312
+P1_WIN              329E
+P1_WINGAME          32DA
+P2                  333E
+P2RL                3364
+P2_ROUND            331E
+P2_SCORE            3316
+P2_WIN              32BC
+P2_WINGAME          32F6
+PAINT               10FC
+PUNCH               336C
+PUNCHGL1            249E
+PUNCHGL2            29F0
+PUNCHGR1            21EC
+PUNCHGR2            2762
+PUNCHRL1            270C
+PUNCHRL2            2C46
+PUNCHRR1            245A
+PUNCHRR2            29BA
+RH1_X               3246
+RH1_Y               324A
+RH2_X               324E
+RH2_Y               3252
+ROUND1              3380
+ROUND1S             33A1
+ROUND2              338B
+ROUND2S             33A8
+ROUND3              3396
+ROUND3S             33AF
+S                   3144
+SCORE               2C68
+START               1000
+START_L1            33F6
+START_L10           3509
+START_L11           3530
+START_L2            33FD
+START_L3            3404
+START_L4            3435
+START_L5            345E
+START_L6            3468
+START_L7            3491
+START_L8            34B7
+START_L9            34E8
+START_SCREEN        1056
+START_X             33F2
+START_Y             33F4
+WOOSH               3376
+_00000000           1264
+_00000001           1330
+_00000002           143C
+_00000003           151C
+_00000004           160C
+_00000005           1626
+_00000006           1640
+_00000007           165A
+_00000008           1674
+_00000009           168E
+_0000000A           16A8
+_0000000B           16C2
+_0000000C           16DC
+_0000000D           16F6
+_0000000E           1710
+_0000000F           172A
+_00000010           1744
+_00000011           175E
+_00000012           1778
+_00000013           1792
+_00000014           17AC
+_00000015           17C6
+_00000016           17E0
+_00000017           17FA
+_00000018           182C
+_00000019           184A
+_0000001A           1868
+_0000001B           1886
+_0000001C           18A4
+_0000001D           18C2
+_0000001E           18E0
+_0000001F           18FE
+_00000020           191C
+_00000021           193A
+_00000022           1958
+_00000023           1976
+_00000024           1994
+_00000025           19B2
+_00000026           19D0
+_00000027           19EE
+_00000028           1A0C
+_00000029           1A2A
+_0000002A           1A48
+_0000002B           1A66
+_0000002C           1AB6
+_0000002D           1AF4
+_0000002E           1AD0
+_0000002F           1AE4
+_00000030           1AF4
+_00000031           1B68
+_00000032           1BEA
+_00000033           1B9E
+_00000034           1B9E
+_00000035           1B9E
+_00000036           1BEA
+_00000037           1BEA
+_00000038           1CCA
+_00000039           1C20
+_0000003A           1C20
+_0000003B           1C20
+_0000003C           1C7E
+_0000003D           1C7A
+_0000003E           1C7A
+_0000003F           1CCA
+_00000040           1CCA
+_00000041           1CCA
+_00000042           1DB8
+_00000043           1D86
+_00000044           1D24
+_00000045           1D24
+_00000046           1D86
+_00000047           1D86
+_00000048           1DB8
+_00000049           1E8E
+_0000004A           1E5C
+_0000004B           1DFA
+_0000004C           1DFA
+_0000004D           1E5C
+_0000004E           1E5C
+_0000004F           1E8E
+_00000050           1EFC
+_00000051           1F7E
+_00000052           1F32
+_00000053           1F32
+_00000054           1F32
+_00000055           1F7E
+_00000056           1F7E
+_00000057           2000
+_00000058           1FB4
+_00000059           1FB4
+_0000005A           1FB4
+_0000005B           2000
+_0000005C           2000
+_0000005D           20EE
+_0000005E           20BC
+_0000005F           205A
+_00000060           205A
+_00000061           20BC
+_00000062           20BC
+_00000063           20EE
+_00000064           21C4
+_00000065           2192
+_00000066           2130
+_00000067           2130
+_00000068           2192
+_00000069           2192
+_0000006A           21C4
+_0000006B           2488
+_0000006C           2488
+_0000006D           2200
+_0000006E           245A
+_0000006F           2350
+_00000070           2350
+_00000071           2314
+_00000072           245A
+_00000073           245A
+_00000074           23E2
+_00000075           241E
+_00000076           247C
+_00000077           273A
+_00000078           273A
+_00000079           24B2
+_0000007A           270C
+_0000007B           2602
+_0000007C           2602
+_0000007D           25C6
+_0000007E           270C
+_0000007F           270C
+_00000080           2694
+_00000081           26D0
+_00000082           272E
+_00000083           29DA
+_00000084           29DA
+_00000085           29BA
+_00000086           28B8
+_00000087           28B8
+_00000088           287C
+_00000089           29BA
+_0000008A           29BA
+_0000008B           2942
+_0000008C           297E
+_0000008D           2C66
+_0000008E           2C66
+_0000008F           2C46
+_00000090           2B46
+_00000091           2B46
+_00000092           2B0A
+_00000093           2C46
+_00000094           2C46
+_00000095           2BCE
+_00000096           2C0A
+_00000097           2ECA
+_00000098           2C8E
+_00000099           2E9E
+_0000009A           2ECA
+_0000009B           2EB8
+_0000009C           2ECA
+_0000009D           3144
+_0000009E           2EF0
+_0000009F           310C
+_000000A0           3144
+_000000A1           3126
+_000000A2           3144
+_000000A3           31BA
+_000000A4           322E

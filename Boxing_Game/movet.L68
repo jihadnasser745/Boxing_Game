@@ -1,0 +1,113 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 10/27/2021 8:38:54 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00001000                             7      ORG    $1000
+00001000                             8  START:                  ; first instruction of program
+00001000                             9  
+00001000                            10  * Put program code here
+Line 11 ERROR: Undefined symbol
+00001000  23FC 0000000A 005455B8    11                  MOVE.L #10,B1_X
+Line 12 ERROR: Undefined symbol
+0000100A  23FC 000000C8 005455B8    12                  MOVE.L #200,B1_Y
+Line 13 ERROR: Undefined symbol
+00001014  23FC 00000258 005455B8    13                  MOVE.L #600,B2_X
+Line 14 ERROR: Undefined symbol
+0000101E  23FC 000000C8 005455B8    14                  MOVE.L #200,B2_Y
+Line 15 ERROR: Undefined symbol
+00001028  23FC 0000001E 005455B8    15                  MOVE.L #30,B_W
+Line 16 ERROR: Undefined symbol
+00001032  23FC 00000096 005455B8    16                  MOVE.L #150,B_H
+0000103C                            17                  
+0000103C                            18                  
+Line 19 ERROR: Undefined symbol
+0000103C  23FC 0000002D 005455B8    19                  MOVE.L #45,RH1_X
+Line 20 ERROR: Undefined symbol
+00001046  23FC 000000AA 005455B8    20                  MOVE.L #170,RH1_Y
+Line 21 ERROR: Undefined symbol
+00001050  23FC 00000217 005455B8    21                  MOVE.L #535,RH2_X
+Line 22 ERROR: Undefined symbol
+0000105A  23FC 00000011 005455B8    22                  MOVE.L #17,RH2_Y
+Line 23 ERROR: Undefined symbol
+00001064  23FC 0000003C 005455B8    23                  MOVE.L #60,HAND_DI
+0000106E                            24                  
+0000106E                            25                  
+Line 26 ERROR: Undefined symbol
+0000106E  23FC 00000000 005455B8    26                  MOVE.L #0,HEAD1_X
+Line 27 ERROR: Undefined symbol
+00001078  23FC 000000F5 005455B8    27                  MOVE.L #245,HEAD1_Y
+Line 28 ERROR: Undefined symbol
+00001082  23FC 00000244 005455B8    28                  MOVE.L #580,HEAD2_X
+Line 29 ERROR: Undefined symbol
+0000108C  23FC 000000F5 005455B8    29                  MOVE.L #245,HEAD2_Y
+00001096                            30                  
+00001096                            31                  
+Line 32 ERROR: Undefined symbol
+00001096  23FC 0000002D 005455B8    32                  MOVE.L #45,LH1_X
+Line 33 ERROR: Undefined symbol
+000010A0  23FC 00000140 005455B8    33                  MOVE.L #320,LH1_Y
+Line 34 ERROR: Undefined symbol
+000010AA  23FC 00000217 005455B8    34                  MOVE.L #535,LH2_X
+Line 35 ERROR: Undefined symbol
+000010B4  23FC 00000140 005455B8    35                  MOVE.L #320,LH2_Y
+000010BE                            36                  
+000010BE                            37                  
+Line 38 ERROR: Undefined symbol
+000010BE  23FC 0000000A 005455B8    38                  MOVE.L #10,BHR1_X
+Line 39 ERROR: Undefined symbol
+000010C8  23FC 000000C3 005455B8    39                  MOVE.L #195,BHR1_Y
+Line 40 ERROR: Undefined symbol
+000010D2  23FC 00000253 005455B8    40                  MOVE.L #595,BHR2_X
+Line 41 ERROR: Undefined symbol
+000010DC  23FC 000000C3 005455B8    41                  MOVE.L #195,BHR2_Y
+Line 42 ERROR: Undefined symbol
+000010E6  23FC 00000023 005455B8    42                  MOVE.L #35,BHR1_W
+Line 43 ERROR: Undefined symbol
+000010F0  23FC 00000023 005455B8    43                  MOVE.L #35,BHL1_W
+Line 44 ERROR: Undefined symbol
+000010FA  23FC 00000023 005455B8    44                  MOVE.L #35,BHR2_W
+Line 45 ERROR: Undefined symbol
+00001104  23FC 00000023 005455B8    45                  MOVE.L #35,BHL2_W
+0000110E                            46                  
+0000110E                            47                  
+Line 48 ERROR: Undefined symbol
+0000110E  23FC 0000000A 005455B8    48                  MOVE.L #10,BH_H
+00001118                            49                  
+Line 50 ERROR: Undefined symbol
+00001118  23FC 0000012A 005455B8    50                  MOVE.L #298,H1_X
+Line 51 ERROR: Undefined symbol
+00001122  23FC 00000156 005455B8    51                  MOVE.L #342,H2_X
+0000112C                            52                  
+0000112C                            53                  
+Line 54 ERROR: Undefined symbol
+0000112C  23FC 0000000A 005455B8    54                  MOVE.L #10,BHL1_X
+Line 55 ERROR: Undefined symbol
+00001136  23FC 00000159 005455B8    55                  MOVE.L #345,BHL1_Y
+Line 56 ERROR: Undefined symbol
+00001140  23FC 00000253 005455B8    56                  MOVE.L #595,BHL2_X
+Line 57 ERROR: Undefined symbol
+0000114A  23FC 00000159 005455B8    57                  MOVE.L #345,BHL2_Y
+00001154                            58                  
+00001154                            59                  
+Line 60 ERROR: Undefined symbol
+00001154  23FC 00000000 005455B8    60                  MOVE.L #0,IS_INVERSED
+0000115E  FFFF FFFF                 61      SIMHALT             ; halt simulator
+00001162                            62  
+00001162                            63  * Put variables and constants here
+00001162                            64  
+00001162                            65      END    START        ; last line of source
+
+35 errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+START               1000

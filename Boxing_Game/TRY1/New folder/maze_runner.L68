@@ -1,0 +1,1806 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 1/8/2021 1:08:29 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :Maze Runner Level 1
+00000000                             3  * Written by :Edward Smith
+00000000                             4  * Date       :June 2015
+00000000                             5  * Description:easmith@nvcc.edu
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  ; Move arrow Keys to move to the right maze exit without hitting obstacles or walls. You have 20 seconds.
+00000000                             8  
+00000000                             9  
+00000000                            10  
+00001000                            11        ORG    $1000
+00001000                            12  START:                  ; first instruction of program
+00001000                            13  
+00001000                            14  
+00001000                            15  initialize
+00001000  303C 0008                 16      move #8,d0
+00001004  4E4F                      17      trap #15
+00001006  2A01                      18      move.l d1,D5        ; get time
+00001008                            19      
+00001008                            20   
+00001008  6100 00A6                 21      bsr setup
+0000100C                            22      
+0000100C                            23      
+0000100C                            24      
+0000100C                            25  loop
+0000100C                            26      
+0000100C  6100 04C8                 27      bsr background                  
+00001010                            28       
+00001010                            29  
+00001010  6100 06DC                 30      bsr shooter1
+00001014  6100 116C                 31      bsr bulletcollide 
+00001018  6100 0776                 32      bsr shooter2
+0000101C  6100 1164                 33      bsr bulletcollide
+00001020  6100 0800                 34      bsr shooter3
+00001024  6100 115C                 35      bsr bulletcollide
+00001028  6100 0896                 36      bsr shooter4
+0000102C  6100 1154                 37      bsr bulletcollide
+00001030  6100 0920                 38      bsr shooter5
+00001034  6100 114C                 39      bsr bulletcollide
+00001038  6100 09B6                 40      bsr shooter6
+0000103C  6100 1144                 41      bsr bulletcollide
+00001040  6100 0A4C                 42      bsr shooter7
+00001044  6100 113C                 43      bsr bulletcollide
+00001048  6100 0AE2                 44      bsr shooter8
+0000104C  6100 1134                 45      bsr bulletcollide
+00001050  6100 0B6A                 46      bsr shooter9 
+00001054  6100 112C                 47      bsr bulletcollide
+00001058                            48  
+00001058  6100 0C0C                 49      bsr shooter10
+0000105C  6100 1124                 50      bsr bulletcollide
+00001060  6100 0D2C                 51      bsr shooter12
+00001064  6100 111C                 52      bsr bulletcollide
+00001068  6100 0DB6                 53      bsr shooter13
+0000106C  6100 1114                 54      bsr bulletcollide
+00001070  6100 0E4C                 55      bsr shooter14
+00001074  6100 110C                 56      bsr bulletcollide
+00001078  6100 0EC8                 57      bsr shooter15
+0000107C  6100 1104                 58      bsr bulletcollide
+00001080  6100 0F44                 59      bsr shooter16
+00001084  6100 10FC                 60      bsr bulletcollide
+00001088  6100 0FDA                 61      bsr shooter17
+0000108C  6100 10F4                 62      bsr bulletcollide
+00001090  6100 0302                 63      bsr keycheck 
+00001094  103C 0017                 64      move.b  #23,d0          delay to reduce cpu workload
+00001098  7202                      65          move.l  #2,d1           delay 1/100 sec
+0000109A  4E4F                      66          trap    #15             execute delay 
+0000109C  6100 0438                 67       bsr background 
+000010A0  6100 1046                 68        bsr checkend  
+000010A4  6100 0386                 69      bsr checkwall
+000010A8  6100 0416                 70      bsr checktime
+000010AC                            71       
+000010AC                            72      
+000010AC                            73           
+000010AC                            74       
+000010AC                            75      
+000010AC  6000 FF5E                 76      bra loop
+000010B0                            77        
+000010B0                            78     
+000010B0                            79  setup
+000010B0  223C 00FF0000             80      move.l  #Blue,D1    set pen color
+000010B6  103C 0050                 81      move.b  #80,D0
+000010BA  4E4F                      82      trap    #15
+000010BC                            83  
+000010BC                            84   
+000010BC  223C 00FF0000             85      move.l  #Blue,d1        fill color
+000010C2  103C 0051                 86      move.b  #81,d0
+000010C6  4E4F                      87      trap    #15         set fill color
+000010C8                            88      
+000010C8  103C 005C                 89      move.b  #92,d0
+000010CC  123C 0011                 90      move.b  #17,d1      enable double buffering
+000010D0  4E4F                      91      trap    #15
+000010D2                            92  
+000010D2                            93  
+000010D2                            94          
+000010D2                            95      
+000010D2  33F9 00002250 00002258    96       move.w S1XL, ts1      ; this is establishing the walls and the initial positions of the obstacles
+000010DC  33F9 00002252 0000225A    97       move.w S1XR ,ts2
+000010E6  33F9 00002254 0000225C    98       move.w S1YU , ts3
+000010F0  33F9 00002256 0000225E    99       move.w S1YL, ts4
+000010FA  41F9 000021F0            100      lea xL,A0
+00001100  43F9 000021F2            101      lea xR,A1
+00001106  45F9 000021F4            102      lea yU,A2
+0000110C  47F9 000021F6            103       lea yB,A3
+00001112  33F9 00002260 00002268   104       move.w S2XL, ts5
+0000111C  33F9 00002262 0000226A   105       move.w S2XR ,ts6
+00001126  33F9 00002264 0000226C   106       move.w S2YU , ts7
+00001130  33F9 00002266 0000226E   107       move.w S2YL, ts8
+0000113A  33F9 00002270 00002278   108       move.w S3XL, ts9
+00001144  33F9 00002272 0000227A   109       move.w S3XR ,ts10
+0000114E  33F9 00002274 0000227C   110       move.w S3YU , ts11
+00001158  33F9 00002276 0000227E   111       move.w S3YL, ts12
+00001162  33F9 00002280 00002288   112       move.w S4XL, ts13
+0000116C  33F9 00002282 0000228A   113       move.w S4XR ,ts14
+00001176  33F9 00002284 0000228C   114       move.w S4YU , ts15
+00001180  33F9 00002286 0000228E   115       move.w S4YL, ts16
+0000118A  33F9 00002290 00002298   116       move.w S5XL, ts17
+00001194  33F9 00002292 0000229A   117       move.w S5XR ,ts18
+0000119E  33F9 00002294 0000229C   118       move.w S5YU , ts19
+000011A8  33F9 00002296 0000229E   119       move.w S5YL, ts20
+000011B2  33F9 000022A0 000022A8   120       move.w S6XL, ts21
+000011BC  33F9 000022A2 000022AA   121       move.w S6XR ,ts22
+000011C6  33F9 000022A4 000022AC   122       move.w S6YU , ts23
+000011D0  33F9 000022A6 000022AE   123       move.w S6YL, ts24
+000011DA  33F9 000022B0 000022B8   124        move.w S7XL, ts25
+000011E4  33F9 000022B2 000022BA   125       move.w S7XR ,ts26
+000011EE  33F9 000022B4 000022BC   126       move.w S7YU , ts27
+000011F8  33F9 000022B6 000022BE   127       move.w S7YL, ts28
+00001202  33F9 000022C0 000022C8   128        move.w S8XL, ts29
+0000120C  33F9 000022C2 000022CA   129       move.w S8XR ,ts30
+00001216  33F9 000022C4 000022CC   130       move.w S8YU , ts31
+00001220  33F9 000022C6 000022CE   131       move.w S8YL, ts32
+0000122A  33F9 000022D0 000022D8   132       move.w S9XL, ts33
+00001234  33F9 000022D2 000022DA   133       move.w S9XR ,ts34
+0000123E  33F9 000022D4 000022DC   134       move.w S9YU , ts35
+00001248  33F9 000022D6 000022DE   135       move.w S9YL, ts36
+00001252  33F9 000022E0 000022E8   136        move.w S10XL, ts37
+0000125C  33F9 000022E2 000022EA   137       move.w S10XR ,ts38
+00001266  33F9 000022E4 000022EC   138       move.w S10YU , ts39
+00001270  33F9 000022E6 000022EE   139       move.w S10YL, ts40
+0000127A  33F9 000022F0 000022F8   140         move.w S11XL, ts41
+00001284  33F9 000022F2 000022FA   141       move.w S11XR ,ts42
+0000128E  33F9 000022F4 000022FC   142       move.w S11YU , ts43
+00001298  33F9 000022F6 000022FE   143       move.w S11YL, ts44
+000012A2  33F9 00002300 00002308   144        move.w S12XL, ts45
+000012AC  33F9 00002302 0000230A   145       move.w S12XR ,ts46
+000012B6  33F9 00002304 0000230C   146       move.w S12YU , ts47
+000012C0  33F9 00002306 0000230E   147       move.w S12YL, ts48
+000012CA  33F9 00002310 00002318   148      move.w S13XL, ts49
+000012D4  33F9 00002312 0000231A   149       move.w S13XR ,ts50
+000012DE  33F9 00002314 0000231C   150       move.w S13YU , ts51
+000012E8  33F9 00002316 0000231E   151       move.w S13YL, ts52
+000012F2  33F9 00002320 00002328   152      move.w S14XL, ts53
+000012FC  33F9 00002322 0000232A   153       move.w S14XR ,ts54
+00001306  33F9 00002324 0000232C   154       move.w S14YU , ts55
+00001310  33F9 00002326 0000232E   155       move.w S14YL, ts56
+0000131A  33F9 00002330 00002338   156      move.w S15XL, ts57
+00001324  33F9 00002332 0000233A   157       move.w S15XR ,ts58
+0000132E  33F9 00002334 0000233C   158       move.w S15YU , ts59
+00001338  33F9 00002336 0000233E   159       move.w S15YL, ts60
+00001342  33F9 00002340 00002348   160       move.w S16XL, ts61
+0000134C  33F9 00002342 0000234A   161       move.w S16XR ,ts62
+00001356  33F9 00002344 0000234C   162       move.w S16YU , ts63
+00001360  33F9 00002346 0000234E   163       move.w S16YL, ts64
+0000136A                           164  
+0000136A  33F9 00002350 00002358   165        move.w S17XL, ts65
+00001374  33F9 00002352 0000235A   166       move.w S17XR ,ts66
+0000137E  33F9 00002354 0000235C   167       move.w S17YU , ts67
+00001388  33F9 00002356 0000235E   168       move.w S17YL, ts68
+00001392                           169  
+00001392                           170  
+00001392  4E75                     171      rts
+00001394                           172  keycheck    
+00001394  223C 00FF0000            173       move.l  #Blue,D1    set pen color
+0000139A  103C 0050                174      move.b  #80,D0
+0000139E  4E4F                     175      trap    #15
+000013A0                           176  
+000013A0                           177   
+000013A0  223C 00FF0000            178      move.l  #Blue,d1        fill color
+000013A6  103C 0051                179      move.b  #81,d0
+000013AA  4E4F                     180      trap    #15         set fill color
+000013AC                           181      
+000013AC                           182  
+000013AC                           183       
+000013AC  103C 0013                184      Move.b #19,D0                                          ; this checks for arrow keys up,down,left,right and then moves player accordingly
+000013B0  4281                     185      clr.l d1
+000013B2  223C 26282527            186      move.l #$26<<24+$28<<16+$25<<8+$27,D1
+000013B8  4E4F                     187      trap #15
+000013BA  0801 0018                188      btst.l #24,D1
+000013BE                           189       if <NE> THEN
+000013C2  5B52                     190            sub #5,(A2)
+000013C4  3412                     191      move.w (A2),d2
+000013C6                           192      
+000013C6  5B53                     193      sub #5,(A3)
+000013C8  3813                     194      move.w (A3),d4
+000013CA  3611                     195      move.w (A1),d3
+000013CC  3210                     196      move.w (A0),d1
+000013CE  103C 0057                197      move.b  #87,d0
+000013D2  4E4F                     198      trap    #15         draw filled rect
+000013D4  4E75                     199      rts
+000013D6                           200      endi
+000013D6  0801 0010                201       btst.l #16,D1
+000013DA                           202       if <NE> THEN
+000013DE                           203       
+000013DE  5A52                     204       add #5,(A2)
+000013E0  3412                     205      move.w (A2),d2
+000013E2                           206      
+000013E2  5A53                     207      add #5,(A3)
+000013E4  3813                     208      move.w (A3),d4
+000013E6  3611                     209      move.w (A1),d3
+000013E8  3210                     210      move.w (A0),d1
+000013EA  103C 0057                211       move.b #87,d0
+000013EE  4E4F                     212      trap    #15 
+000013F0  4E75                     213      rts
+000013F2                           214      endi
+000013F2  0801 0008                215       btst.l #8,D1
+000013F6                           216       if <NE> THEN
+000013FA                           217        
+000013FA                           218      
+000013FA  3412                     219      move.w (A2),d2
+000013FC  3813                     220      move.w (A3),d4
+000013FE  5B51                     221      sub #5,(A1)
+00001400  3611                     222      move.w (A1),d3
+00001402  5B50                     223      sub #5,(A0)
+00001404  3210                     224      move.w (A0),d1
+00001406                           225  
+00001406  103C 0057                226       move.b #87,d0
+0000140A  4E4F                     227      trap    #15 
+0000140C  4E75                     228      rts
+0000140E                           229      endi
+0000140E                           230      
+0000140E  0801 0001                231       btst.l #1,D1
+00001412                           232       if <NE> THEN
+00001416                           233      
+00001416                           234       
+00001416  3412                     235      move.w (A2),d2
+00001418                           236      
+00001418                           237      
+00001418  3813                     238      move.w (A3),d4
+0000141A  5A51                     239      add #5,(A1)
+0000141C  3611                     240      move.w (A1),d3
+0000141E  5A50                     241      add #5,(A0)
+00001420  3210                     242      move.w (A0),d1
+00001422  103C 0057                243       move.b #87,d0
+00001426  4E4F                     244      trap    #15  
+00001428  4E75                     245      rts
+0000142A                           246      endi
+0000142A  4E75                     247      rts
+0000142C                           248      
+0000142C                           249  checkwall                 ; this starts the process of checking if you hit a wall
+0000142C  0C50 00C8                250      cmpi.w #200,(A0)        ; A0 is left x of player.  So all of the "second " routines are checking the y based on the x.
+00001430  6D00 002C                251       blt second1            ; I did this before I knew about the collision detection method done below for obstacles
+00001434  0C50 00FA                252        cmpi.w #250,(A0)
+00001438  6D00 002E                253       blt second2
+0000143C  0C50 01F4                254        cmpi.w #500,(A0)
+00001440  6D00 0030                255       blt second3
+00001444  0C50 01F4                256        cmpi.w #500,(A0)
+00001448  6E00 0042                257        bgt second4
+0000144C  0C50 0104                258        cmpi.w #260,(A0)
+00001450  6E00 004C                259        bgt second5
+00001454  0C50 015E                260       cmpi.w #350,(A0)
+00001458  6E00 005C                261        bgt second6
+0000145C                           262  
+0000145C  4E75                     263       rts      
+0000145E                           264  
+0000145E                           265      
+0000145E                           266  second1 
+0000145E  0C52 0190                267       cmpi.w #400,(A2)
+00001462  6D00 013C                268       blt term
+00001466  4E75                     269       rts
+00001468                           270  second2 
+00001468  0C52 0064                271       cmpi.w #100,(A2)
+0000146C  6D00 0132                272       blt term 
+00001470  4E75                     273       rts
+00001472                           274       
+00001472                           275  second3
+00001472  0C52 0032                276        cmpi.w #50,(A2) 
+00001476  6D00 0128                277        blt term 
+0000147A  0C51 0104                278        cmpi.w #260,(A1)
+0000147E  6E00 001E                279        bgt second5
+00001482  0C50 015E                280        cmpi.w #350,(A0)
+00001486  6E00 002E                281        bgt second6
+0000148A                           282      
+0000148A                           283        
+0000148A  4E75                     284        rts   
+0000148C                           285  second4 
+0000148C  0C52 008C                286       cmpi.w #140,(A2)
+00001490  6D00 010E                287       blt term
+00001494  0C50 012C                288       cmpi.w #300,(A0)
+00001498  6E00 001C                289       bgt second6
+0000149C  4E75                     290       rts
+0000149E                           291  second5
+0000149E  0C53 0118                292       cmpi.w #280,(A3)
+000014A2  6E00 0004                293       bgt check1
+000014A6  4E75                     294       rts
+000014A8                           295  check1 
+000014A8  0C50 015E                296       cmpi.w  #350,(A0)
+000014AC  6D00 00F2                297       blt term
+000014B0  6E00 0004                298       bgt second6
+000014B4  4E75                     299       rts
+000014B6                           300  second6
+000014B6  0C53 0190                301       cmpi.w #400,(A3)
+000014BA  6E00 00E4                302       bgt term
+000014BE  4E75                     303       rts  
+000014C0                           304  checktime          ; checks if it has been 20 seconds
+000014C0                           305      
+000014C0  303C 0008                306      move #8,d0
+000014C4  4E4F                     307      trap #15
+000014C6  2E01                     308      move.l D1,D7
+000014C8  9E85                     309      sub.l  D5,D7
+000014CA  BEBC 000007D0            310      cmp.l #2000,D7
+000014D0  6200 017A                311      bhi timeout
+000014D4                           312      
+000014D4  4E75                     313      rts
+000014D6                           314  
+000014D6                           315  background                                       ; this draws in the walls 
+000014D6  223C 000000FF            316    move.l  #Color2,D1    set pen color
+000014DC  103C 0050                317      move.b  #80,D0
+000014E0  4E4F                     318      trap    #15
+000014E2                           319  
+000014E2                           320   
+000014E2  223C 000000FF            321      move.l  #Color2,d1      fill color
+000014E8  103C 0051                322      move.b  #81,d0
+000014EC  4E4F                     323      trap    #15         set fill color
+000014EE                           324      
+000014EE                           325  
+000014EE  343C 0000                326   move.w #0,d2       uY1
+000014F2  383C 0190                327      move.w  #400,d4     lY2
+000014F6  323C 0000                328      move.w #0, d1       lx
+000014FA  363C 00C8                329      move.w  #200 , d3       rx
+000014FE                           330      
+000014FE  103C 0057                331      move.b  #87,d0
+00001502  4E4F                     332      trap    #15         draw filled rect
+00001504                           333  
+00001504                           334      
+00001504  343C 0000                335    move.w    #0,d2       uY1
+00001508                           336      
+00001508  383C 0064                337      move.w  #100,d4     lY2
+0000150C                           338      
+0000150C  323C 00C8                339       move.w #200, d1       lx
+00001510  363C 00FA                340       move.w  #250 , d3       rx
+00001514                           341      
+00001514  103C 0057                342      move.b  #87,d0
+00001518  4E4F                     343      trap    #15         draw filled rect
+0000151A                           344  
+0000151A                           345     
+0000151A  343C 0000                346      move.w  #0,d2       uY1
+0000151E                           347      
+0000151E  383C 0032                348      move.w  #50,d4      lY2
+00001522                           349      
+00001522  323C 00FA                350       move.w #250, d1       lx
+00001526  363C 0280                351       move.w  #640 , d3       rx
+0000152A                           352      
+0000152A  103C 0057                353      move.b  #87,d0
+0000152E  4E4F                     354      trap    #15         draw filled rect
+00001530                           355    
+00001530  343C 0000                356      move.w  #0,d2       uY1
+00001534                           357      
+00001534  383C 008C                358      move.w  #140,d4     lY2
+00001538                           359      
+00001538  323C 01F4                360       move.w #500, d1       lx
+0000153C  363C 0280                361       move.w  #640 , d3       rx
+00001540                           362      
+00001540  103C 0057                363      move.b  #87,d0
+00001544  4E4F                     364      trap    #15         draw filled rect
+00001546                           365  
+00001546                           366  
+00001546  343C 0118                367       move.w #280,d2     uY1
+0000154A                           368      
+0000154A  383C 01E0                369      move.w  #480,d4     lY2
+0000154E                           370      
+0000154E  323C 0104                371       move.w #260,d1       lx
+00001552  363C 015E                372       move.w  #350 , d3       rx
+00001556                           373      
+00001556  103C 0057                374      move.b  #87,d0
+0000155A  4E4F                     375      trap    #15         draw filled rect  
+0000155C                           376      
+0000155C                           377      
+0000155C                           378      
+0000155C  343C 0190                379        move.w    #400,d2     uY1
+00001560                           380      
+00001560  383C 01E0                381      move.w  #480,d4     lY2
+00001564                           382      
+00001564  323C 015E                383       move.w #350,d1       lx
+00001568  363C 0280                384       move.w  #640 , d3       rx
+0000156C                           385      
+0000156C  103C 0057                386      move.b  #87,d0
+00001570  4E4F                     387      trap    #15         draw filled rect 
+00001572                           388          
+00001572  223C 00FF0000            389      move.l  #Blue,D1    set pen color
+00001578  103C 0050                390      move.b  #80,D0
+0000157C  4E4F                     391      trap    #15
+0000157E                           392  
+0000157E                           393   
+0000157E  223C 00FF0000            394      move.l  #Blue,d1        fill color
+00001584  103C 0051                395      move.b  #81,d0
+00001588  4E4F                     396      trap    #15         set fill color
+0000158A                           397  
+0000158A  3412                     398      move.w  (A2),d2     uY1
+0000158C                           399      
+0000158C  3813                     400      move.w  (A3),d4     lY2
+0000158E                           401      
+0000158E  3210                     402       move.w (A0),d1       lx
+00001590  3611                     403       move.w  (A1) , d3       rx
+00001592                           404      
+00001592  103C 0057                405      move.b  #87,d0
+00001596  4E4F                     406      trap    #15         draw filled rect 
+00001598                           407      
+00001598  103C 005E                408      move.b  #94,d0      repaint
+0000159C  4E4F                     409      trap    #15
+0000159E                           410      
+0000159E  4E75                     411      rts
+000015A0                           412  term                ; this ends the game and restarts if you collide
+000015A0                           413      
+000015A0                           414      
+000015A0                           415  
+000015A0                           416   
+000015A0  6100 014C                417      bsr shooter1
+000015A4                           418       
+000015A4  6100 01EA                419      bsr shooter2
+000015A8                           420      
+000015A8  6100 0278                421      bsr shooter3
+000015AC                           422      
+000015AC  6100 0312                423      bsr shooter4
+000015B0                           424      
+000015B0  6100 03A0                425      bsr shooter5
+000015B4                           426      
+000015B4  6100 043A                427      bsr shooter6
+000015B8                           428      
+000015B8  6100 04D4                429      bsr shooter7
+000015BC                           430      
+000015BC  6100 056E                431      bsr shooter8
+000015C0                           432      
+000015C0  6100 05FA                433      bsr shooter9 
+000015C4                           434      
+000015C4  6100 06A0                435      bsr shooter10
+000015C8                           436      
+000015C8  6100 0720                437      bsr shooter11
+000015CC                           438      
+000015CC  6100 07C0                439      bsr shooter12
+000015D0                           440      
+000015D0  6100 084E                441      bsr shooter13
+000015D4                           442      
+000015D4  6100 08E8                443      bsr shooter14
+000015D8  6100 0968                444      bsr shooter15
+000015DC  6100 09E8                445      bsr shooter16
+000015E0  6100 0A82                446      bsr shooter17
+000015E4  6100 FEF0                447      bsr background
+000015E8  43F9 00002229            448      lea msg4,A1
+000015EE  303C 000D                449      move #13,D0
+000015F2  4E4F                     450      trap #15
+000015F4  103C 005E                451      move.b  #94,d0      repaint
+000015F8  4E4F                     452      trap    #15
+000015FA                           453      
+000015FA  43F9 000021F8            454      lea msg,A1
+00001600  303C 000D                455      move #13,D0
+00001604  4E4F                     456      trap #15
+00001606                           457      
+00001606                           458  
+00001606  103C 005E                459      move.b  #94,d0      repaint
+0000160A  4E4F                     460      trap    #15
+0000160C                           461      
+0000160C                           462  
+0000160C  103C 0017                463     move.b   #23,d0          delay to reduce cpu workload
+00001610  223C 000000C8            464          move.l  #200,d1         delay 1/100 sec
+00001616  4E4F                     465          trap    #15             execute delay 
+00001618  307C 0000                466       movea #0,A0
+0000161C  327C 0000                467       movea #0, A1
+00001620  347C 0000                468       movea #0,A2
+00001624  367C 0000                469       movea #0, A3
+00001628  33FC 000A 000021F0       470       move  #10, XL
+00001630  33FC 0014 000021F2       471       move  #20, XR
+00001638  33FC 01C2 000021F4       472       move #450, YU
+00001640  33FC 01CC 000021F6       473       move #460,YB
+00001648                           474        
+00001648  6000 F9B6                475      bra initialize
+0000164C                           476      
+0000164C                           477  timeout                    ; this ends game and restarts if you run out of time
+0000164C                           478      
+0000164C                           479      
+0000164C                           480  
+0000164C                           481   
+0000164C  6100 00A0                482      bsr shooter1
+00001650                           483       
+00001650  6100 013E                484      bsr shooter2
+00001654                           485      
+00001654  6100 01CC                486      bsr shooter3
+00001658                           487      
+00001658  6100 0266                488      bsr shooter4
+0000165C                           489      
+0000165C  6100 02F4                490      bsr shooter5
+00001660                           491      
+00001660  6100 038E                492      bsr shooter6
+00001664                           493      
+00001664  6100 0428                494      bsr shooter7
+00001668                           495      
+00001668  6100 04C2                496      bsr shooter8
+0000166C                           497      
+0000166C  6100 054E                498      bsr shooter9 
+00001670                           499      
+00001670                           500          
+00001670  6100 0678                501      bsr shooter11
+00001674                           502      
+00001674  6100 0718                503      bsr shooter12
+00001678                           504      
+00001678  6100 07A6                505      bsr shooter13
+0000167C                           506      
+0000167C  6100 0840                507      bsr shooter14
+00001680  6100 08C0                508      bsr shooter15
+00001684  6100 0940                509      bsr shooter16
+00001688  6100 09DA                510      bsr shooter17
+0000168C  6100 FE48                511      bsr background
+00001690  43F9 00002229            512      lea msg4,A1
+00001696  303C 000D                513      move #13,D0
+0000169A  4E4F                     514      trap #15
+0000169C                           515      
+0000169C                           516      
+0000169C  43F9 0000221B            517      lea msg3,A1
+000016A2  303C 000D                518      move #13,D0
+000016A6  4E4F                     519      trap #15
+000016A8                           520      
+000016A8                           521  
+000016A8  103C 005E                522      move.b  #94,d0      repaint
+000016AC  4E4F                     523      trap    #15
+000016AE                           524      
+000016AE                           525  
+000016AE  103C 0017                526       move.b #23,d0          delay to reduce cpu workload
+000016B2  223C 000000C8            527          move.l  #200,d1         delay 1/100 sec
+000016B8  4E4F                     528          trap    #15             execute delay 
+000016BA  307C 0000                529       movea #0,A0
+000016BE  327C 0000                530       movea #0, A1
+000016C2  347C 0000                531       movea #0,A2
+000016C6  367C 0000                532       movea #0, A3
+000016CA  33FC 000A 000021F0       533       move  #10, XL
+000016D2  33FC 0014 000021F2       534       move  #20, XR
+000016DA  33FC 01C2 000021F4       535       move #450, YU
+000016E2  33FC 01CC 000021F6       536       move #460,YB
+000016EA                           537        
+000016EA  6000 F914                538      bra initialize
+000016EE                           539  
+000016EE                           540  shooter1                                        ; "shooterx" routines control the obstacles.  some have some randomness
+000016EE  223C 00FFFFFF            541        move.l  #Color3,D1    set pen color
+000016F4  103C 0050                542      move.b  #80,D0
+000016F8  4E4F                     543      trap    #15
+000016FA                           544  
+000016FA                           545   
+000016FA  223C 00FFFFFF            546      move.l  #Color3,d1      fill color
+00001700  103C 0051                547      move.b  #81,d0
+00001704  4E4F                     548      trap    #15         set fill color
+00001706                           549      
+00001706                           550      if (ts4) <lt> #50 then 
+00001712  33F9 00002250 00002258   551       move.w S1XL, ts1
+0000171C  33F9 00002252 0000225A   552       move.w S1XR ,ts2
+00001726  33F9 00002254 0000225C   553       move.w S1YU , ts3
+00001730  33F9 00002256 0000225E   554       move.w S1YL, ts4
+0000173A                           555     endi
+0000173A                           556     
+0000173A  3439 0000225C            557       move.w (ts3),d2        uY1
+00001740                           558      
+00001740  3839 0000225E            559       move.w (ts4),d4        lY2
+00001746                           560      
+00001746  3239 00002258            561       move.w (ts1),d1       lx
+0000174C  3639 0000225A            562       move.w  (ts2) , d3       rx
+00001752                           563         
+00001752                           564       
+00001752                           565       
+00001752  103C 0057                566      move.b  #87,d0
+00001756  4E4F                     567      trap    #15         draw filled rect 
+00001758                           568      
+00001758                           569      
+00001758                           570  
+00001758                           571      
+00001758  103C 005E                572      move.b  #94,d0      repaint
+0000175C  4E4F                     573      trap    #15
+0000175E                           574      
+0000175E                           575       
+0000175E                           576      
+0000175E                           577      
+0000175E  103C 000B                578        move.b  #11,D0
+00001762  323C FF00                579      move.w  #$FF00,D1
+00001766  4E4F                     580      trap    #15         clear screen                     ; here is the screen clear
+00001768  103C 0008                581      move.b  #8,d0
+0000176C  4E4F                     582      trap    #15
+0000176E  C2BC 0000FFFF            583      and.l   #$0000FFFF,d1  prevent overflow in divu                          ; this is gettinng random number
+00001774  82FC 0003                584      divu    #3,d1       time count / 100
+00001778  4841                     585      swap    d1          swap upper and lower words of D1 to put remainder in low word
+0000177A  5241                     586      addq.w  #1,d1       d1.w contains number from 1 to 3
+0000177C                           587  
+0000177C                           588      
+0000177C  9379 0000225C            589      sub.w   d1,(ts3)                 ; subtracting random number from obstacle top
+00001782  9379 0000225E            590      sub.w   d1, (ts4)
+00001788  3239 00002258            591      move.w (ts1),d1
+0000178E  4E75                     592          rts
+00001790                           593  shooter2 
+00001790  223C 00FFFFFF            594        move.l  #Color3,D1    set pen color
+00001796  103C 0050                595      move.b  #80,D0
+0000179A  4E4F                     596      trap    #15
+0000179C                           597  
+0000179C                           598   
+0000179C  223C 00FFFFFF            599      move.l  #Color3,d1      fill color
+000017A2  103C 0051                600      move.b  #81,d0
+000017A6  4E4F                     601      trap    #15         set fill color
+000017A8                           602      
+000017A8                           603      if (ts8) <lt> #40 then 
+000017B4  33F9 00002260 00002268   604       move.w S2XL, ts5
+000017BE  33F9 00002262 0000226A   605       move.w S2XR ,ts6
+000017C8  33F9 00002264 0000226C   606       move.w S2YU , ts7
+000017D2  33F9 00002266 0000226E   607       move.w S2YL, ts8
+000017DC                           608     endi
+000017DC                           609     
+000017DC  3439 0000226C            610       move.w (ts7),d2        uY1
+000017E2                           611      
+000017E2  3839 0000226E            612       move.w (ts8),d4        lY2
+000017E8                           613      
+000017E8  3239 00002268            614       move.w (ts5),d1       lx
+000017EE  3639 0000226A            615       move.w  (ts6) , d3       rx
+000017F4                           616         
+000017F4                           617       
+000017F4                           618       
+000017F4  103C 0057                619      move.b  #87,d0
+000017F8  4E4F                     620      trap    #15         draw filled rect 
+000017FA                           621      
+000017FA                           622      
+000017FA                           623  
+000017FA  103C 0008                624       move.b  #8,d0
+000017FE  4E4F                     625      trap    #15
+00001800  C2BC 0000FFFF            626      and.l   #$0000FFFF,d1 prevent overflow in divu
+00001806  82FC 0007                627      divu    #7,d1     time count / 100
+0000180A  4841                     628      swap    d1          swap upper and lower words of D1 to put remainder in low word
+0000180C  5241                     629      addq.w  #1,d1       d1.w contains number from 1 to 7
+0000180E                           630  
+0000180E                           631  
+0000180E                           632      
+0000180E                           633  
+0000180E  9379 0000226C            634      sub.w   d1,(ts7)
+00001814  9379 0000226E            635      sub.w   d1,(ts8)
+0000181A  3239 00002268            636      move.w (ts5),d1 
+00001820  4E75                     637      rts
+00001822                           638  shooter3 
+00001822  223C 00FFFFFF            639        move.l  #Color3,D1    set pen color
+00001828  103C 0050                640      move.b  #80,D0
+0000182C  4E4F                     641      trap    #15
+0000182E                           642  
+0000182E                           643   
+0000182E  223C 00FFFFFF            644      move.l  #Color3,d1      fill color
+00001834  103C 0051                645      move.b  #81,d0
+00001838  4E4F                     646      trap    #15         set fill color
+0000183A                           647      
+0000183A                           648      if (ts11) <gt> #500 then 
+00001846  33F9 00002270 00002278   649       move.w S3XL, ts9
+00001850  33F9 00002272 0000227A   650       move.w S3XR ,ts10
+0000185A  33F9 00002274 0000227C   651       move.w S3YU , ts11
+00001864  33F9 00002276 0000227E   652       move.w S3YL, ts12
+0000186E                           653     endi
+0000186E                           654     
+0000186E  3439 0000227C            655       move.w (ts11),d2       uY1
+00001874                           656      
+00001874  3839 0000227E            657       move.w (ts12),d4       lY2
+0000187A                           658      
+0000187A  3239 00002278            659       move.w (ts9),d1       lx
+00001880  3639 0000227A            660       move.w  (ts10) , d3       rx
+00001886                           661         
+00001886                           662       
+00001886                           663       
+00001886  103C 0057                664      move.b  #87,d0
+0000188A  4E4F                     665      trap    #15         draw filled rect 
+0000188C                           666      
+0000188C                           667      
+0000188C                           668  
+0000188C                           669      
+0000188C  103C 0008                670     move.b  #8,d0
+00001890  4E4F                     671      trap    #15
+00001892  C2BC 0000FFFF            672      and.l   #$0000FFFF,d1 prevent overflow in divu
+00001898  82FC 0005                673      divu    #5,d1     time count / 100
+0000189C  4841                     674      swap    d1          swap upper and lower words of D1 to put remainder in low word
+0000189E  5241                     675      addq.w  #1,d1       d1.w contains number from 1 to 5
+000018A0                           676  
+000018A0                           677      
+000018A0                           678  
+000018A0  D379 0000227C            679      add.w   d1,(ts11)
+000018A6                           680     
+000018A6  5979 00002278            681      sub.w   #4,(ts9)
+000018AC  5779 0000227A            682      sub.w   #3,(ts10)
+000018B2  D379 0000227E            683      add.w   d1,(ts12)
+000018B8  3239 00002278            684       move.w (ts9),d1       
+000018BE  4E75                     685      rts
+000018C0                           686  shooter4 
+000018C0  223C 00FFFFFF            687        move.l  #Color3,D1    set pen color
+000018C6  103C 0050                688      move.b  #80,D0
+000018CA  4E4F                     689      trap    #15
+000018CC                           690  
+000018CC                           691   
+000018CC  223C 00FFFFFF            692      move.l  #Color3,d1      fill color
+000018D2  103C 0051                693      move.b  #81,d0
+000018D6  4E4F                     694      trap    #15         set fill color
+000018D8                           695      
+000018D8                           696      if (ts15) <gt> #700 then 
+000018E4  33F9 00002280 00002288   697       move.w S4XL, ts13
+000018EE  33F9 00002282 0000228A   698       move.w S4XR ,ts14
+000018F8  33F9 00002284 0000228C   699       move.w S4YU , ts15
+00001902  33F9 00002286 0000228E   700       move.w S4YL, ts16
+0000190C                           701     endi
+0000190C                           702     
+0000190C  3439 0000228C            703       move.w (ts15),d2       uY1
+00001912                           704      
+00001912  3839 0000228E            705       move.w (ts16),d4       lY2
+00001918                           706      
+00001918  3239 00002288            707       move.w (ts13),d1       lx
+0000191E  3639 0000228A            708       move.w  (ts14) , d3       rx
+00001924                           709         
+00001924                           710       
+00001924                           711       
+00001924  103C 0057                712      move.b  #87,d0
+00001928  4E4F                     713      trap    #15         draw filled rect 
+0000192A                           714      
+0000192A                           715       
+0000192A  103C 0008                716      move.b  #8,d0
+0000192E  4E4F                     717      trap    #15
+00001930  C2BC 0000FFFF            718      and.l   #$0000FFFF,d1 prevent overflow in divu
+00001936  82FC 0006                719      divu    #6,d1     time count / 100
+0000193A  4841                     720      swap    d1          swap upper and lower words of D1 to put remainder in low word
+0000193C  5241                     721      addq.w  #1,d1       d1.w contains number from 1 to 6
+0000193E                           722  
+0000193E                           723      
+0000193E                           724  
+0000193E                           725      
+0000193E                           726  
+0000193E  D379 0000228C            727      add.w   d1,(ts15)
+00001944  5879 0000228E            728      add.w   #4, (ts16)
+0000194A  3239 00002288            729      move.w (ts13),d1 
+00001950  4E75                     730      rts
+00001952                           731  shooter5
+00001952  223C 00FFFFFF            732        move.l  #Color3,D1    set pen color
+00001958  103C 0050                733      move.b  #80,D0
+0000195C  4E4F                     734      trap    #15
+0000195E                           735  
+0000195E                           736   
+0000195E  223C 00FFFFFF            737      move.l  #Color3,d1      fill color
+00001964  103C 0051                738      move.b  #81,d0
+00001968  4E4F                     739      trap    #15         set fill color
+0000196A                           740      
+0000196A                           741      if (ts19) <gt> #450 then 
+00001976  33F9 00002290 00002298   742       move.w S5XL, ts17
+00001980  33F9 00002292 0000229A   743       move.w S5XR ,ts18
+0000198A  33F9 00002294 0000229C   744       move.w S5YU , ts19
+00001994  33F9 00002296 0000229E   745       move.w S5YL, ts20
+0000199E                           746     endi
+0000199E                           747     
+0000199E  3439 0000229C            748       move.w (ts19),d2       uY1
+000019A4                           749      
+000019A4  3839 0000229E            750       move.w (ts20),d4       lY2
+000019AA                           751      
+000019AA  3239 00002298            752       move.w (ts17),d1       lx
+000019B0  3639 0000229A            753       move.w  (ts18) , d3       rx
+000019B6                           754         
+000019B6                           755       
+000019B6                           756       
+000019B6  103C 0057                757      move.b  #87,d0
+000019BA  4E4F                     758      trap    #15         draw filled rect 
+000019BC                           759      
+000019BC                           760      
+000019BC  103C 0008                761     move.b  #8,d0
+000019C0  4E4F                     762      trap    #15
+000019C2  C2BC 0000FFFF            763      and.l   #$0000FFFF,d1 prevent overflow in divu
+000019C8  82FC 0003                764      divu    #3,d1     time count / 100
+000019CC  4841                     765      swap    d1          swap upper and lower words of D1 to put remainder in low word
+000019CE  5241                     766      addq.w  #1,d1       d1.w contains number from 1 to 3
+000019D0                           767  
+000019D0                           768      
+000019D0  5879 0000229C            769      add   #4,(ts19)
+000019D6  5C79 0000229E            770      add.w  #6, (ts20)
+000019DC  5679 00002298            771      add   #3,(ts17)
+000019E2  5679 0000229A            772      add.w  #3, (ts18)
+000019E8  3239 00002298            773      move.w (ts17),d1
+000019EE                           774  
+000019EE  4E75                     775      rts
+000019F0                           776  shooter6
+000019F0  223C 00FFFFFF            777        move.l  #Color3,D1    set pen color
+000019F6  103C 0050                778      move.b  #80,D0
+000019FA  4E4F                     779      trap    #15
+000019FC                           780  
+000019FC                           781   
+000019FC  223C 00FFFFFF            782      move.l  #Color3,d1      fill color
+00001A02  103C 0051                783      move.b  #81,d0
+00001A06  4E4F                     784      trap    #15         set fill color
+00001A08                           785      
+00001A08                           786      if (ts23) <gt> #460 then 
+00001A14  33F9 000022A0 000022A8   787       move.w S6XL, ts21
+00001A1E  33F9 000022A2 000022AA   788       move.w S6XR ,ts22
+00001A28  33F9 000022A4 000022AC   789       move.w S6YU , ts23
+00001A32  33F9 000022A6 000022AE   790       move.w S6YL, ts24
+00001A3C                           791     endi
+00001A3C                           792     
+00001A3C  3439 000022AC            793       move.w (ts23),d2       uY1
+00001A42                           794      
+00001A42  3839 000022AE            795       move.w (ts24),d4       lY2
+00001A48                           796      
+00001A48  3239 000022A8            797       move.w (ts21),d1       lx
+00001A4E  3639 000022AA            798       move.w  (ts22) , d3       rx
+00001A54                           799         
+00001A54                           800       
+00001A54                           801       
+00001A54  103C 0057                802      move.b  #87,d0
+00001A58  4E4F                     803      trap    #15         draw filled rect 
+00001A5A                           804      
+00001A5A                           805      
+00001A5A                           806  
+00001A5A  103C 0008                807      move.b  #8,d0
+00001A5E  4E4F                     808      trap    #15
+00001A60  C2BC 0000FFFF            809      and.l   #$0000FFFF,d1 prevent overflow in divu
+00001A66  82FC 000F                810      divu    #15,d1     time count / 100
+00001A6A  4841                     811      swap    d1          swap upper and lower words of D1 to put remainder in low word
+00001A6C  5241                     812      addq.w  #1,d1       d1.w contains number from 1 to 15
+00001A6E                           813  
+00001A6E                           814      
+00001A6E                           815  
+00001A6E                           816  
+00001A6E                           817  
+00001A6E                           818      
+00001A6E                           819  
+00001A6E  5879 000022AC            820      add   #4,(ts23)
+00001A74  5879 000022AE            821      add   #4, (ts24)
+00001A7A  5679 000022A8            822      add   #3,(ts21)
+00001A80  5679 000022AA            823      add   #3, (ts22)
+00001A86  3239 000022A8            824      move  (ts21),d1
+00001A8C  4E75                     825      rts
+00001A8E                           826  shooter7
+00001A8E  223C 00FFFFFF            827        move.l  #Color3,D1    set pen color
+00001A94  103C 0050                828      move.b  #80,D0
+00001A98  4E4F                     829      trap    #15
+00001A9A                           830  
+00001A9A                           831   
+00001A9A  223C 00FFFFFF            832      move.l  #Color3,d1      fill color
+00001AA0  103C 0051                833      move.b  #81,d0
+00001AA4  4E4F                     834      trap    #15         set fill color
+00001AA6                           835      
+00001AA6                           836      if (ts26) <lt> #200 then 
+00001AB2  33F9 000022B0 000022B8   837       move.w S7XL, ts25
+00001ABC  33F9 000022B2 000022BA   838       move.w S7XR ,ts26
+00001AC6  33F9 000022B4 000022BC   839       move.w S7YU , ts27
+00001AD0  33F9 000022B6 000022BE   840       move.w S7YL, ts28
+00001ADA                           841     endi
+00001ADA                           842     
+00001ADA  3439 000022BC            843       move.w (ts27),d2       uY1
+00001AE0                           844      
+00001AE0  3839 000022BE            845       move.w (ts28),d4       lY2
+00001AE6                           846      
+00001AE6  3239 000022B8            847       move.w (ts25),d1       lx
+00001AEC  3639 000022BA            848       move.w  (ts26) , d3       rx
+00001AF2                           849         
+00001AF2                           850       
+00001AF2                           851       
+00001AF2  103C 0057                852      move.b  #87,d0
+00001AF6  4E4F                     853      trap    #15         draw filled rect 
+00001AF8                           854      
+00001AF8                           855      
+00001AF8                           856  
+00001AF8  103C 0008                857      move.b  #8,d0
+00001AFC  4E4F                     858      trap    #15
+00001AFE  C2BC 0000FFFF            859      and.l   #$0000FFFF,d1 prevent overflow in divu
+00001B04  82FC 0006                860      divu    #6,d1     time count / 6
+00001B08  4841                     861      swap    d1          swap upper and lower words of D1 to put remainder in low word
+00001B0A  5241                     862      addq.w  #1,d1       d1.w contains number from 1 to 6
+00001B0C                           863  
+00001B0C                           864      
+00001B0C                           865  
+00001B0C  5979 000022BC            866      sub   #4,(ts27)
+00001B12  9379 000022BE            867      sub.w  d1, (ts28)
+00001B18  5779 000022B8            868      sub   #3,(ts25)
+00001B1E  5779 000022BA            869      sub   #3, (ts26)
+00001B24  3239 000022B8            870     move.w  (ts25),d1
+00001B2A  4E75                     871      rts
+00001B2C                           872  shooter8
+00001B2C  223C 00FFFFFF            873        move.l  #Color3,D1    set pen color
+00001B32  103C 0050                874      move.b  #80,D0
+00001B36  4E4F                     875      trap    #15
+00001B38                           876  
+00001B38                           877   
+00001B38  223C 00FFFFFF            878      move.l  #Color3,d1      fill color
+00001B3E  103C 0051                879      move.b  #81,d0
+00001B42  4E4F                     880      trap    #15         set fill color
+00001B44                           881      
+00001B44                           882      if (ts30) <gt> #640 then 
+00001B50  33F9 000022C0 000022C8   883       move.w S8XL, ts29
+00001B5A  33F9 000022C2 000022CA   884       move.w S8XR ,ts30
+00001B64  33F9 000022C4 000022CC   885       move.w S8YU , ts31
+00001B6E  33F9 000022C6 000022CE   886       move.w S8YL, ts32
+00001B78                           887     endi
+00001B78                           888     
+00001B78  3439 000022CC            889       move.w (ts31),d2       uY1
+00001B7E                           890      
+00001B7E  3839 000022CE            891       move.w (ts32),d4       lY2
+00001B84                           892      
+00001B84  3239 000022C8            893       move.w (ts29),d1       lx
+00001B8A  3639 000022CA            894       move.w  (ts30) , d3       rx
+00001B90                           895         
+00001B90                           896       
+00001B90                           897       
+00001B90  103C 0057                898      move.b  #87,d0
+00001B94  4E4F                     899      trap    #15         draw filled rect 
+00001B96                           900      
+00001B96                           901      
+00001B96                           902     
+00001B96                           903      
+00001B96                           904  
+00001B96                           905      
+00001B96                           906  
+00001B96                           907     
+00001B96  5379 000022B8            908      sub   #1,(ts25)
+00001B9C  5279 000022BA            909      add   #1, (ts26)
+00001BA2  5679 000022C8            910      add   #3 , (ts29)
+00001BA8  5679 000022CA            911      add   #3, (ts30)
+00001BAE  5279 000022CC            912      add     #1 , (ts31)
+00001BB4  5879 000022CE            913      add    #4, (ts32)
+00001BBA  4E75                     914      rts
+00001BBC                           915  shooter9
+00001BBC  223C 00FFFFFF            916        move.l  #Color3,D1    set pen color
+00001BC2  103C 0050                917      move.b  #80,D0
+00001BC6  4E4F                     918      trap    #15
+00001BC8                           919  
+00001BC8                           920   
+00001BC8  223C 00FFFFFF            921      move.l  #Color3,d1      fill color
+00001BCE  103C 0051                922      move.b  #81,d0
+00001BD2  4E4F                     923      trap    #15         set fill color
+00001BD4                           924      
+00001BD4                           925      if (ts34) <gt> #600 then 
+00001BE0  33F9 000022D0 000022D8   926       move.w S9XL, ts33
+00001BEA  33F9 000022D2 000022DA   927       move.w S9XR ,ts34
+00001BF4  33F9 000022D4 000022DC   928       move.w S9YU , ts35
+00001BFE  33F9 000022D6 000022DE   929       move.w S9YL, ts36
+00001C08                           930     endi
+00001C08                           931     
+00001C08  3439 000022DC            932       move.w (ts35),d2       uY1
+00001C0E                           933      
+00001C0E  3839 000022DE            934       move.w (ts36),d4       lY2
+00001C14                           935      
+00001C14  3239 000022D8            936       move.w (ts33),d1       lx
+00001C1A  3639 000022DA            937       move.w  (ts34) , d3       rx
+00001C20                           938         
+00001C20                           939       
+00001C20                           940       
+00001C20  103C 0057                941      move.b  #87,d0
+00001C24  4E4F                     942      trap    #15         draw filled rect 
+00001C26                           943      
+00001C26                           944      
+00001C26  103C 0008                945     move.b  #8,d0
+00001C2A  4E4F                     946      trap    #15
+00001C2C  C2BC 0000FFFF            947      and.l   #$0000FFFF,d1 prevent overflow in divu
+00001C32  82FC 0003                948      divu    #3,d1     time count / 3
+00001C36  4841                     949      swap    d1          swap upper and lower words of D1 to put remainder in low word
+00001C38  5241                     950      addq.w  #1,d1       d1.w contains number from 1 to 3
+00001C3A                           951  
+00001C3A                           952     
+00001C3A  5379 000022CC            953      sub   #1,(ts31)
+00001C40  5279 000022CE            954      add   #1, (ts32)
+00001C46  D379 000022DC            955      add.w   d1 , (ts35)
+00001C4C  D379 000022DE            956      add.w   d1, (ts36)
+00001C52  5479 000022D8            957      add     #2 , (ts33)
+00001C58  5479 000022DA            958      add    #2, (ts34)
+00001C5E  3239 000022D8            959      move.w (ts33),d1
+00001C64  4E75                     960      rts
+00001C66                           961  
+00001C66                           962  shooter10
+00001C66  223C 00FFFFFF            963        move.l  #Color3,D1    set pen color
+00001C6C  103C 0050                964      move.b  #80,D0
+00001C70  4E4F                     965      trap    #15
+00001C72                           966  
+00001C72                           967   
+00001C72  223C 00FFFFFF            968      move.l  #Color3,d1      fill color
+00001C78  103C 0051                969      move.b  #81,d0
+00001C7C  4E4F                     970      trap    #15         set fill color
+00001C7E                           971      
+00001C7E                           972      if (ts37) <lt> #260 then 
+00001C8A  33F9 000022E0 000022E8   973       move.w S10XL, ts37
+00001C94  33F9 000022E2 000022EA   974       move.w S10XR ,ts38
+00001C9E  33F9 000022E4 000022EC   975       move.w S10YU , ts39
+00001CA8  33F9 000022E6 000022EE   976       move.w S10YL, ts40
+00001CB2                           977     endi
+00001CB2                           978     
+00001CB2  3439 000022EC            979       move.w (ts39),d2       uY1
+00001CB8                           980      
+00001CB8  3839 000022EE            981       move.w (ts40),d4       lY2
+00001CBE                           982      
+00001CBE  3239 000022E8            983       move.w (ts37),d1       lx
+00001CC4  3639 000022EA            984       move.w  (ts38) , d3       rx
+00001CCA                           985         
+00001CCA                           986       
+00001CCA                           987       
+00001CCA  103C 0057                988      move.b  #87,d0
+00001CCE  4E4F                     989      trap    #15         draw filled rect 
+00001CD0                           990      
+00001CD0                           991      
+00001CD0                           992     
+00001CD0                           993      
+00001CD0                           994  
+00001CD0                           995  
+00001CD0                           996  
+00001CD0                           997      
+00001CD0                           998  
+00001CD0                           999  
+00001CD0                          1000     
+00001CD0                          1001          
+00001CD0  5579 000022E8           1002      sub.w     #2, (ts37)
+00001CD6  5379 000022EA           1003      sub.w   #1, (ts38)
+00001CDC  5679 000022EC           1004      add #3 , (ts39)
+00001CE2  5679 000022EE           1005      add  #3,(ts40)
+00001CE8                          1006      
+00001CE8  4E75                    1007      rts
+00001CEA                          1008  
+00001CEA                          1009  shooter11
+00001CEA  223C 00FFFFFF           1010        move.l  #Color3,D1    set pen color
+00001CF0  103C 0050               1011      move.b  #80,D0
+00001CF4  4E4F                    1012      trap    #15
+00001CF6                          1013  
+00001CF6                          1014   
+00001CF6  223C 00FFFFFF           1015      move.l  #Color3,d1      fill color
+00001CFC  103C 0051               1016      move.b  #81,d0
+00001D00  4E4F                    1017      trap    #15         set fill color
+00001D02                          1018      
+00001D02                          1019      if (ts41) <lt> #260 then 
+00001D0E  33F9 000022F0 000022F8  1020       move.w S11XL, ts41
+00001D18  33F9 000022F2 000022FA  1021       move.w S11XR ,ts42
+00001D22  33F9 000022F4 000022FC  1022       move.w S11YU , ts43
+00001D2C  33F9 000022F6 000022FE  1023       move.w S11YL, ts44
+00001D36                          1024     endi
+00001D36                          1025     
+00001D36  3439 000022FC           1026       move.w (ts43),d2       uY1
+00001D3C                          1027      
+00001D3C  3839 000022FE           1028       move.w (ts44),d4       lY2
+00001D42                          1029      
+00001D42  3239 000022F8           1030       move.w (ts41),d1       lx
+00001D48  3639 000022FA           1031       move.w  (ts42) , d3       rx
+00001D4E                          1032         
+00001D4E                          1033       
+00001D4E                          1034       
+00001D4E  103C 0057               1035      move.b  #87,d0
+00001D52  4E4F                    1036      trap    #15         draw filled rect 
+00001D54                          1037      
+00001D54                          1038      
+00001D54                          1039     
+00001D54                          1040      
+00001D54                          1041  
+00001D54                          1042      
+00001D54                          1043  
+00001D54  103C 0008               1044     move.b  #8,d0
+00001D58  4E4F                    1045      trap    #15
+00001D5A  C2BC 0000FFFF           1046      and.l   #$0000FFFF,d1 prevent overflow in divu
+00001D60  82FC 0002               1047      divu    #2,d1     time count / 2
+00001D64  4841                    1048      swap    d1          swap upper and lower words of D1 to put remainder in low word
+00001D66  5241                    1049      addq.w  #1,d1       d1.w contains number from 1 to 2
+00001D68                          1050  
+00001D68                          1051      
+00001D68                          1052  
+00001D68                          1053  
+00001D68                          1054          
+00001D68  5379 000022E8           1055      sub     #1 , (ts37)
+00001D6E                          1056      
+00001D6E                          1057      
+00001D6E  9379 000022F8           1058      sub.w     d1 , (ts41)
+00001D74  5379 000022FA           1059      sub  #1, (ts42)
+00001D7A                          1060      
+00001D7A                          1061      
+00001D7A  5879 000022FC           1062      add #4 , (ts43)
+00001D80  5879 000022FE           1063      add  #4,(ts44)
+00001D86  3239 000022F8           1064      move.w (ts41),d1
+00001D8C                          1065  
+00001D8C  4E75                    1066      rts
+00001D8E                          1067  
+00001D8E                          1068  shooter12
+00001D8E  223C 00FFFFFF           1069        move.l  #Color3,D1    set pen color
+00001D94  103C 0050               1070      move.b  #80,D0
+00001D98  4E4F                    1071      trap    #15
+00001D9A                          1072  
+00001D9A                          1073   
+00001D9A  223C 00FFFFFF           1074      move.l  #Color3,d1      fill color
+00001DA0  103C 0051               1075      move.b  #81,d0
+00001DA4  4E4F                    1076      trap    #15         set fill color
+00001DA6                          1077      
+00001DA6                          1078      if (ts47) <lt> #50 then 
+00001DB2  33F9 00002300 00002308  1079       move.w S12XL, ts45
+00001DBC  33F9 00002302 0000230A  1080       move.w S12XR ,ts46
+00001DC6  33F9 00002304 0000230C  1081       move.w S12YU , ts47
+00001DD0  33F9 00002306 0000230E  1082       move.w S12YL, ts48
+00001DDA                          1083     endi
+00001DDA                          1084     
+00001DDA  3439 0000230C           1085       move.w (ts47),d2       uY1
+00001DE0                          1086      
+00001DE0  3839 0000230E           1087       move.w (ts48),d4       lY2
+00001DE6                          1088      
+00001DE6  3239 00002308           1089       move.w (ts45),d1       lx
+00001DEC  3639 0000230A           1090       move.w  (ts46) , d3       rx
+00001DF2                          1091         
+00001DF2                          1092       
+00001DF2                          1093       
+00001DF2  103C 0057               1094      move.b  #87,d0
+00001DF6  4E4F                    1095      trap    #15         draw filled rect 
+00001DF8                          1096      
+00001DF8                          1097      
+00001DF8                          1098     
+00001DF8                          1099      
+00001DF8                          1100  
+00001DF8                          1101      
+00001DF8                          1102  
+00001DF8                          1103     
+00001DF8                          1104          
+00001DF8  103C 0008               1105      move.b  #8,d0
+00001DFC  4E4F                    1106      trap    #15
+00001DFE  C2BC 0000FFFF           1107      and.l   #$0000FFFF,d1 prevent overflow in divu
+00001E04  82FC 0004               1108      divu    #4,d1     time count / 4
+00001E08  4841                    1109      swap    d1          swap upper and lower words of D1 to put remainder in low word
+00001E0A  5241                    1110      addq.w  #1,d1       d1.w contains number from 1 to 4
+00001E0C                          1111  
+00001E0C                          1112      
+00001E0C                          1113  
+00001E0C                          1114  
+00001E0C  9379 0000230C           1115      sub.w d1 ,(ts47)
+00001E12  9379 0000230E           1116      sub.w d1,(ts48)
+00001E18  3239 00002308           1117      move.w (ts45),d1
+00001E1E                          1118  
+00001E1E  4E75                    1119      rts
+00001E20                          1120  
+00001E20                          1121  shooter13
+00001E20  223C 00FFFFFF           1122        move.l  #Color3,D1    set pen color
+00001E26  103C 0050               1123      move.b  #80,D0
+00001E2A  4E4F                    1124      trap    #15
+00001E2C                          1125  
+00001E2C                          1126   
+00001E2C  223C 00FFFFFF           1127      move.l  #Color3,d1      fill color
+00001E32  103C 0051               1128      move.b  #81,d0
+00001E36  4E4F                    1129      trap    #15         set fill color
+00001E38                          1130      
+00001E38                          1131      if (ts51) <lt> #40 then 
+00001E44  33F9 00002300 00002318  1132       move.w S12XL, ts49
+00001E4E  33F9 00002302 0000231A  1133       move.w S12XR ,ts50
+00001E58  33F9 00002304 0000231C  1134       move.w S12YU , ts51
+00001E62  33F9 00002306 0000231E  1135       move.w S12YL, ts52
+00001E6C                          1136     endi
+00001E6C                          1137     
+00001E6C  3439 0000231C           1138       move.w (ts51),d2       uY1
+00001E72                          1139      
+00001E72  3839 0000231E           1140       move.w (ts52),d4       lY2
+00001E78                          1141      
+00001E78  3239 00002318           1142       move.w (ts49),d1       lx
+00001E7E  3639 0000231A           1143       move.w  (ts50) , d3       rx
+00001E84                          1144         
+00001E84                          1145       
+00001E84                          1146       
+00001E84  103C 0057               1147      move.b  #87,d0
+00001E88  4E4F                    1148      trap    #15         draw filled rect 
+00001E8A                          1149      
+00001E8A                          1150      
+00001E8A                          1151     
+00001E8A                          1152      
+00001E8A                          1153  
+00001E8A  103C 0008               1154      move.b  #8,d0
+00001E8E  4E4F                    1155      trap    #15
+00001E90  C2BC 0000FFFF           1156      and.l   #$0000FFFF,d1 prevent overflow in divu
+00001E96  82FC 0004               1157      divu    #4,d1     time count / 4
+00001E9A  4841                    1158      swap    d1          swap upper and lower words of D1 to put remainder in low word
+00001E9C  5241                    1159      addq.w  #1,d1       d1.w contains number from 1 to 4
+00001E9E                          1160  
+00001E9E                          1161      
+00001E9E                          1162  
+00001E9E                          1163  
+00001E9E  5379 0000230C           1164      sub  #1  , (ts47)
+00001EA4  5279 0000230A           1165      add #1, (ts46)
+00001EAA  5B79 0000231C           1166      sub   #5 , (ts51)
+00001EB0  9379 0000231E           1167      sub.w  d1,(ts52)
+00001EB6  3239 00002318           1168     move.w (ts49),d1
+00001EBC                          1169  
+00001EBC  4E75                    1170      rts
+00001EBE                          1171  
+00001EBE                          1172  shooter14
+00001EBE  223C 00FFFFFF           1173        move.l  #Color3,D1    set pen color
+00001EC4  103C 0050               1174      move.b  #80,D0
+00001EC8  4E4F                    1175      trap    #15
+00001ECA                          1176  
+00001ECA                          1177   
+00001ECA  223C 00FFFFFF           1178      move.l  #Color3,d1      fill color
+00001ED0  103C 0051               1179      move.b  #81,d0
+00001ED4  4E4F                    1180      trap    #15         set fill color
+00001ED6                          1181      
+00001ED6                          1182      if (ts55) <lt> #90 then 
+00001EE2  33F9 00002320 00002328  1183       move.w S14XL, ts53
+00001EEC  33F9 00002322 0000232A  1184       move.w S14XR ,ts54
+00001EF6  33F9 00002324 0000232C  1185       move.w S14YU , ts55
+00001F00  33F9 00002326 0000232E  1186       move.w S14YL, ts56
+00001F0A                          1187     endi
+00001F0A                          1188     
+00001F0A  3439 0000232C           1189       move.w (ts55),d2       uY1
+00001F10                          1190      
+00001F10  3839 0000232E           1191       move.w (ts56),d4       lY2
+00001F16                          1192      
+00001F16  3239 00002328           1193       move.w (ts53),d1       lx
+00001F1C  3639 0000232A           1194       move.w  (ts54) , d3       rx
+00001F22                          1195         
+00001F22                          1196       
+00001F22                          1197       
+00001F22  103C 0057               1198      move.b  #87,d0
+00001F26  4E4F                    1199      trap    #15         draw filled rect 
+00001F28                          1200      
+00001F28                          1201      
+00001F28  5579 0000232A           1202     sub #2,(ts54)
+00001F2E  5579 0000232E           1203     sub  #2, (ts56)
+00001F34  5779 0000232C           1204      sub #3, (ts55)
+00001F3A  5979 00002328           1205      sub #4, (ts53)
+00001F40                          1206  
+00001F40                          1207  
+00001F40                          1208      
+00001F40  4E75                    1209      rts
+00001F42                          1210  shooter15
+00001F42  223C 00FFFFFF           1211        move.l  #Color3,D1    set pen color
+00001F48  103C 0050               1212      move.b  #80,D0
+00001F4C  4E4F                    1213      trap    #15
+00001F4E                          1214  
+00001F4E                          1215   
+00001F4E  223C 00FFFFFF           1216      move.l  #Color3,d1      fill color
+00001F54  103C 0051               1217      move.b  #81,d0
+00001F58  4E4F                    1218      trap    #15         set fill color
+00001F5A                          1219      
+00001F5A                          1220      if (ts60) <gt> #700 then 
+00001F66  33F9 00002330 00002338  1221       move.w S15XL, ts57
+00001F70  33F9 00002332 0000233A  1222       move.w S15XR ,ts58
+00001F7A  33F9 00002334 0000233C  1223       move.w S15YU , ts59
+00001F84  33F9 00002336 0000233E  1224       move.w S15YL, ts60
+00001F8E                          1225     endi
+00001F8E                          1226     
+00001F8E  3439 0000233C           1227       move.w (ts59),d2       uY1
+00001F94                          1228      
+00001F94  3839 0000233E           1229       move.w (ts60),d4       lY2
+00001F9A                          1230      
+00001F9A  3239 00002338           1231       move.w (ts57),d1       lx
+00001FA0  3639 0000233A           1232       move.w  (ts58) , d3       rx
+00001FA6                          1233         
+00001FA6                          1234       
+00001FA6                          1235       
+00001FA6  103C 0057               1236      move.b  #87,d0
+00001FAA  4E4F                    1237      trap    #15         draw filled rect 
+00001FAC                          1238      
+00001FAC                          1239      
+00001FAC  5379 00002338           1240     sub #1,(ts57)
+00001FB2  5379 0000233A           1241     sub  #1, (ts58)
+00001FB8  5279 0000233C           1242     add  #1, (ts59)
+00001FBE  5479 0000233E           1243     add  #2,(ts60)
+00001FC4                          1244  
+00001FC4                          1245  
+00001FC4                          1246      
+00001FC4  4E75                    1247      rts
+00001FC6                          1248  shooter16
+00001FC6  223C 00FFFFFF           1249        move.l  #Color3,D1    set pen color
+00001FCC  103C 0050               1250      move.b  #80,D0
+00001FD0  4E4F                    1251      trap    #15
+00001FD2                          1252  
+00001FD2                          1253   
+00001FD2  223C 00FFFFFF           1254      move.l  #Color3,d1      fill color
+00001FD8  103C 0051               1255      move.b  #81,d0
+00001FDC  4E4F                    1256      trap    #15         set fill color
+00001FDE                          1257      
+00001FDE                          1258      if (ts62) <gt> #620 then 
+00001FEA  33F9 00002340 00002348  1259       move.w S16XL, ts61
+00001FF4  33F9 00002342 0000234A  1260       move.w S16XR ,ts62
+00001FFE  33F9 00002344 0000234C  1261       move.w S16YU ,ts63
+00002008  33F9 00002346 0000234E  1262       move.w S16YL, ts64
+00002012                          1263     endi
+00002012                          1264     
+00002012  3439 0000234C           1265       move.w (ts63),d2       uY1
+00002018                          1266      
+00002018  3839 0000234E           1267       move.w (ts64),d4       lY2
+0000201E                          1268      
+0000201E  3239 00002348           1269       move.w (ts61),d1       lx
+00002024  3639 0000234A           1270       move.w  (ts62) , d3       rx
+0000202A                          1271         
+0000202A                          1272       
+0000202A                          1273       
+0000202A  103C 0057               1274      move.b  #87,d0
+0000202E  4E4F                    1275      trap    #15         draw filled rect 
+00002030                          1276      
+00002030  103C 0008               1277      move.b  #8,d0
+00002034  4E4F                    1278      trap    #15
+00002036  C2BC 0000FFFF           1279      and.l   #$0000FFFF,d1 prevent overflow in divu
+0000203C  82FC 0004               1280      divu    #4,d1     time count / 4
+00002040  4841                    1281      swap    d1          swap upper and lower words of D1 to put remainder in low word
+00002042  5241                    1282      addq.w  #1,d1       d1.w contains number from 1 to 4
+00002044                          1283  
+00002044                          1284      
+00002044                          1285  
+00002044                          1286  
+00002044  5379 00002348           1287     sub #1,(ts61)
+0000204A  5279 0000234A           1288     add  #1, (ts62)
+00002050  9379 0000234C           1289      sub.w d1, (ts63)
+00002056  5279 0000234E           1290      add #1, (ts64)
+0000205C                          1291  
+0000205C  3239 00002348           1292     move.w  (ts61),d1
+00002062                          1293      
+00002062  4E75                    1294      rts
+00002064                          1295  
+00002064                          1296  shooter17
+00002064  223C 00FFFFFF           1297        move.l  #Color3,D1    set pen color
+0000206A  103C 0050               1298      move.b  #80,D0
+0000206E  4E4F                    1299      trap    #15
+00002070                          1300  
+00002070                          1301   
+00002070  223C 00FFFFFF           1302      move.l  #Color3,d1      fill color
+00002076  103C 0051               1303      move.b  #81,d0
+0000207A  4E4F                    1304      trap    #15         set fill color
+0000207C                          1305      
+0000207C                          1306      if (ts65) <lt> #260 then 
+00002088  33F9 00002350 00002358  1307       move.w S17XL, ts65
+00002092  33F9 00002352 0000235A  1308       move.w S17XR ,ts66
+0000209C  33F9 00002354 0000235C  1309       move.w S17YU ,ts67
+000020A6  33F9 00002356 0000235E  1310       move.w S17YL, ts68
+000020B0                          1311     endi
+000020B0                          1312     
+000020B0  3439 0000235C           1313       move.w (ts67),d2       uY1
+000020B6                          1314      
+000020B6  3839 0000235E           1315       move.w (ts68),d4       lY2
+000020BC                          1316      
+000020BC  3239 00002358           1317       move.w (ts65),d1       lx
+000020C2  3639 0000235A           1318       move.w  (ts66) , d3       rx
+000020C8                          1319         
+000020C8                          1320       
+000020C8                          1321       
+000020C8  103C 0057               1322      move.b  #87,d0
+000020CC  4E4F                    1323      trap    #15         draw filled rect 
+000020CE                          1324      
+000020CE                          1325          
+000020CE                          1326  
+000020CE                          1327  
+000020CE  5379 00002358           1328     sub  #1,(ts65)
+000020D4  5279 0000235A           1329     add  #1, (ts66)
+000020DA  5479 0000235C           1330     add #2, (ts67)
+000020E0  5479 0000235E           1331      add #2, (ts68)
+000020E6                          1332         
+000020E6                          1333      
+000020E6  4E75                    1334      rts
+000020E8                          1335  
+000020E8                          1336  
+000020E8                          1337  
+000020E8                          1338  checkend                    ; this checks to see if you made it to the end
+000020E8  0C51 0280               1339      cmpi.w #640,(A1)
+000020EC  6E00 0004               1340      bgt finish
+000020F0  4E75                    1341      rts
+000020F2                          1342  finish                      ; this ends game if you win
+000020F2  43F9 00002229           1343      lea msg4,A1
+000020F8  303C 000D               1344      move #13,D0
+000020FC  4E4F                    1345      trap #15
+000020FE  103C 005E               1346      move.b  #94,d0      repaint
+00002102  4E4F                    1347      trap    #15
+00002104                          1348      
+00002104  43F9 00002210           1349      lea msg2,A1
+0000210A  303C 000D               1350      move #13,D0
+0000210E  4E4F                    1351      trap #15
+00002110  103C 005E               1352      move.b  #94,d0      repaint
+00002114  4E4F                    1353      trap    #15
+00002116  43F9 00002247           1354      lea msg5,A1
+0000211C  303C 000D               1355      move #13,D0
+00002120  4E4F                    1356      trap #15
+00002122  103C 005E               1357      move.b  #94,d0      repaint
+00002126  4E4F                    1358      trap    #15
+00002128                          1359  
+00002128                          1360       
+00002128  0679 03E8 00002368      1361      add #1000,(score)
+00002130                          1362      
+00002130  223C 000003E8           1363      move.l #1000,D1
+00002136  303C 0003               1364      move #3,D0
+0000213A  4E4F                    1365      trap #15
+0000213C  103C 005E               1366      move.b  #94,d0      repaint
+00002140  4E4F                    1367      trap    #15
+00002142                          1368  
+00002142                          1369      
+00002142  103C 0017               1370     move.b   #23,d0          delay to reduce cpu workload
+00002146  223C 000000C8           1371          move.l  #200,d1         delay 1/100 sec
+0000214C  4E4F                    1372          trap    #15             execute delay 
+0000214E  307C 0000               1373       movea #0,A0
+00002152  327C 0000               1374       movea #0, A1
+00002156  347C 0000               1375       movea #0,A2
+0000215A  367C 0000               1376       movea #0, A3
+0000215E  33FC 000A 000021F0      1377       move  #10, XL
+00002166  33FC 0014 000021F2      1378       move  #20, XR
+0000216E  33FC 01C2 000021F4      1379       move #450, YU
+00002176  33FC 01CC 000021F6      1380       move #460,YB
+0000217E                          1381        
+0000217E  6000 EE80               1382      bra initialize
+00002182                          1383   
+00002182                          1384  bulletcollide           ; this detects collision between player and obstacles.  players and obstacles are just rectangles
+00002182                          1385    
+00002182  33D0 00002360           1386     move.w (A0),L             ; no collision if any of these are met
+00002188  3C39 00002360           1387     move.w (L),d6
+0000218E  9646                    1388     sub.w d6,d3                ; d3 is obstacle right
+00002190                          1389     if d3 <lt> #0 then
+00002198  6000 0054               1390     bra nocollision
+0000219C                          1391     endi
+0000219C  33D1 00002362           1392     move.w (A1),R
+000021A2  3C39 00002362           1393     move.w (R),d6
+000021A8  9246                    1394     sub.w  d6,d1
+000021AA                          1395     if d1 <gt> #0 then           ; d1 is obstacle left
+000021B2  6000 003A               1396     bra nocollision
+000021B6                          1397     endi
+000021B6  33D2 00002364           1398     move.w (A2),T
+000021BC  3C39 00002364           1399     move.w (T),D6
+000021C2  9846                    1400     sub.w d6,d4
+000021C4                          1401     if d4 <lt> #0 then 
+000021CC  6000 0020               1402     bra nocollision
+000021D0                          1403     endi
+000021D0  33D3 00002366           1404     move.w  (A3),B
+000021D6  3C39 00002366           1405     move.w  (B),D6
+000021DC  9446                    1406     sub.w d6,d2
+000021DE                          1407     if d2 <gt> #0 then 
+000021E6  6000 0006               1408     bra nocollision
+000021EA                          1409     endi
+000021EA  6000 F3B4               1410     bra term
+000021EE                          1411     
+000021EE  4E75                    1412  nocollision rts   
+000021F0                          1413     
+000021F0                          1414  * Put variables and constants here
+000021F0  =00FF0000               1415  Blue Equ $00FF0000       
+000021F0  =000000FF               1416  Color2 Equ $000000FF
+000021F0  =00FFFFFF               1417  Color3 Equ $00FFFFFF
+000021F0= 000A                    1418  xL:   dc.w 10
+000021F2= 0014                    1419  xR:   dc.w 20
+000021F4= 01C2                    1420  yU:   dc.w   450
+000021F6= 01CC                    1421  yB:   dc.w   460
+000021F8= 47 41 4D 45 20 4F ...   1422  msg:  dc.b  'GAME OVER-  COLLISION',$0,$d,0
+00002210= 59 6F 75 20 57 6F ...   1423  msg2: dc.b 'You Won!',$0,$d,0
+0000221B= 54 6F 6F 20 6D 75 ...   1424  msg3: dc.b 'Too much time',0
+00002229= 4D 61 7A 65 20 52 ...   1425  msg4: dc.b  'Maze Runner by Edward Smith',$0,$d,0
+00002247= 53 43 4F 52 45 00 ...   1426  msg5: dc.b  'SCORE',$0,$d,0
+00002250= 012C                    1427  S1XL: dc.w  300
+00002252= 012F                    1428  S1XR: dc.w   303
+00002254= 0118                    1429  S1YU:  dc.w  280
+00002256= 011D                    1430  S1YL: dc.w  285
+00002258                          1431  ts1:  ds.w  1
+0000225A                          1432  ts2:  ds.w  1
+0000225C                          1433  ts3:  ds.w  1
+0000225E                          1434  ts4:  ds.w  1
+00002260= 012C                    1435  S2XL: dc.w  300
+00002262= 012F                    1436  S2XR: dc.w   303
+00002264= 0140                    1437  S2YU:  dc.w  320
+00002266= 0145                    1438  S2YL: dc.w  325
+00002268                          1439  ts5:  ds.w  1
+0000226A                          1440  ts6:  ds.w  1
+0000226C                          1441  ts7:  ds.w  1
+0000226E                          1442  ts8:  ds.w  1
+00002270= 008C                    1443  S3XL: dc.w  140
+00002272= 008F                    1444  S3XR: dc.w   143
+00002274= 0190                    1445  S3YU:  dc.w  400
+00002276= 0195                    1446  S3YL: dc.w  405
+00002278                          1447  ts9:  ds.w  1
+0000227A                          1448  ts10:  ds.w  1
+0000227C                          1449  ts11:  ds.w  1
+0000227E                          1450  ts12:  ds.w  1
+00002280= 008C                    1451  S4XL: dc.w  140
+00002282= 008F                    1452  S4XR: dc.w   143
+00002284= 0181                    1453  S4YU:  dc.w  385
+00002286= 0186                    1454  S4YL: dc.w  390
+00002288                          1455  ts13:  ds.w  1
+0000228A                          1456  ts14:  ds.w  1
+0000228C                          1457  ts15:  ds.w  1
+0000228E                          1458  ts16:  ds.w  1
+00002290= 00C8                    1459  S5XL: dc.w  200
+00002292= 00CB                    1460  S5XR: dc.w   203
+00002294= 0140                    1461  S5YU:  dc.w  320
+00002296= 0145                    1462  S5YL: dc.w  325
+00002298                          1463  ts17:  ds.w  1
+0000229A                          1464  ts18:  ds.w  1
+0000229C                          1465  ts19:  ds.w  1
+0000229E                          1466  ts20:  ds.w  1
+000022A0= 00B0                    1467  S6XL: dc.w  176
+000022A2= 00B3                    1468  S6XR: dc.w   179
+000022A4= 0128                    1469  S6YU:  dc.w  296
+000022A6= 012D                    1470  S6YL: dc.w  301
+000022A8                          1471  ts21:  ds.w  1
+000022AA                          1472  ts22:  ds.w  1
+000022AC                          1473  ts23:  ds.w  1
+000022AE                          1474  ts24:  ds.w  1
+000022B0= 0104                    1475  S7XL: dc.w  260
+000022B2= 0107                    1476  S7XR: dc.w   263
+000022B4= 012C                    1477  S7YU:  dc.w  300
+000022B6= 0131                    1478  S7YL: dc.w  305
+000022B8                          1479  ts25:  ds.w  1
+000022BA                          1480  ts26:  ds.w  1
+000022BC                          1481  ts27:  ds.w  1
+000022BE                          1482  ts28:  ds.w  1
+000022C0= 0122                    1483  S8XL: dc.w  290
+000022C2= 0125                    1484  S8XR: dc.w   293
+000022C4= 002F                    1485  S8YU:  dc.w  47
+000022C6= 0034                    1486  S8YL: dc.w  52
+000022C8                          1487  ts29:  ds.w  1
+000022CA                          1488  ts30:  ds.w  1
+000022CC                          1489  ts31:  ds.w  1
+000022CE                          1490  ts32:  ds.w  1
+000022D0                          1491  
+000022D0= 010E                    1492  S9XL: dc.w  270
+000022D2= 011D                    1493  S9XR: dc.w   285
+000022D4= 0011                    1494  S9YU:  dc.w  17
+000022D6= 0020                    1495  S9YL: dc.w  32
+000022D8                          1496  ts33:  ds.w  1
+000022DA                          1497  ts34:  ds.w  1
+000022DC                          1498  ts35:   ds.w  1
+000022DE                          1499  ts36:  ds.w  1
+000022E0                          1500  
+000022E0= 01F4                    1501  S10XL: dc.w  500
+000022E2= 01F7                    1502  S10XR: dc.w   503
+000022E4= 0078                    1503  S10YU:  dc.w  120
+000022E6= 007D                    1504  S10YL: dc.w  125
+000022E8                          1505  ts37:  ds.w  1
+000022EA                          1506  ts38:  ds.w  1
+000022EC                          1507  ts39:   ds.w  1
+000022EE                          1508  ts40:  ds.w  1
+000022F0                          1509  
+000022F0= 01FE                    1510  S11XL: dc.w  510
+000022F2= 0201                    1511  S11XR: dc.w   513
+000022F4= 0064                    1512  S11YU:  dc.w  100
+000022F6= 0069                    1513  S11YL: dc.w  105
+000022F8                          1514  ts41:  ds.w  1
+000022FA                          1515  ts42:  ds.w  1
+000022FC                          1516  ts43:   ds.w  1
+000022FE                          1517  ts44:  ds.w  1
+00002300                          1518  
+00002300= 01B8                    1519  S12XL: dc.w  440
+00002302= 01BB                    1520  S12XR: dc.w   443
+00002304= 0190                    1521  S12YU:  dc.w  400
+00002306= 0193                    1522  S12YL: dc.w  403
+00002308                          1523  ts45:  ds.w  1
+0000230A                          1524  ts46:  ds.w  1
+0000230C                          1525  ts47:   ds.w  1
+0000230E                          1526  ts48:  ds.w  1
+00002310                          1527  
+00002310= 01B8                    1528  S13XL: dc.w  440
+00002312= 01BB                    1529  S13XR: dc.w   443
+00002314= 01B8                    1530  S13YU:  dc.w  440
+00002316= 01BD                    1531  S13YL: dc.w  445
+00002318                          1532  ts49:  ds.w  1
+0000231A                          1533  ts50:  ds.w  1
+0000231C                          1534  ts51:   ds.w  1
+0000231E                          1535  ts52:  ds.w  1
+00002320                          1536  
+00002320= 0280                    1537  S14XL: dc.w  640
+00002322= 0283                    1538  S14XR: dc.w   643
+00002324= 0186                    1539  S14YU:  dc.w  390
+00002326= 018B                    1540  S14YL: dc.w  395
+00002328                          1541  ts53:  ds.w  1
+0000232A                          1542  ts54:  ds.w  1
+0000232C                          1543  ts55:   ds.w  1
+0000232E                          1544  ts56:  ds.w  1
+00002330                          1545  
+00002330= 027D                    1546  S15XL: dc.w  637
+00002332= 0280                    1547  S15XR: dc.w   640
+00002334= 0089                    1548  S15YU:  dc.w  137
+00002336= 008C                    1549  S15YL: dc.w  140
+00002338                          1550  ts57:  ds.w  1
+0000233A                          1551  ts58:  ds.w  1
+0000233C                          1552  ts59:   ds.w  1
+0000233E                          1553  ts60:  ds.w  1
+00002340                          1554  
+00002340= 0258                    1555  S16XL: dc.w  600
+00002342= 025A                    1556  S16XR: dc.w   602
+00002344= 0104                    1557  S16YU:  dc.w  260
+00002346= 0106                    1558  S16YL: dc.w   262
+00002348                          1559  ts61:  ds.w  1
+0000234A                          1560  ts62:  ds.w  1
+0000234C                          1561  ts63:   ds.w  1
+0000234E                          1562  ts64:  ds.w  1
+00002350                          1563  
+00002350= 01F4                    1564  S17XL: dc.w  500
+00002352= 01F6                    1565  S17XR: dc.w   502
+00002354= 008C                    1566  S17YU:  dc.w  140
+00002356= 008E                    1567  S17YL: dc.w   142
+00002358                          1568  ts65:  ds.w  1
+0000235A                          1569  ts66:  ds.w  1
+0000235C                          1570  ts67:   ds.w  1
+0000235E                          1571  ts68:  ds.w  1
+00002360                          1572  
+00002360                          1573  L:    ds.w  1
+00002362                          1574  R:    ds.w  1
+00002364                          1575  T:    ds.w 1
+00002366                          1576  B:    ds.w 1
+00002368                          1577  score: ds.l 1
+0000236C                          1578      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+B                   2366
+BACKGROUND          14D6
+BLUE                FF0000
+BULLETCOLLIDE       2182
+CHECK1              14A8
+CHECKEND            20E8
+CHECKTIME           14C0
+CHECKWALL           142C
+COLOR2              FF
+COLOR3              FFFFFF
+FINISH              20F2
+INITIALIZE          1000
+KEYCHECK            1394
+L                   2360
+LOOP                100C
+MSG                 21F8
+MSG2                2210
+MSG3                221B
+MSG4                2229
+MSG5                2247
+NOCOLLISION         21EE
+R                   2362
+S10XL               22E0
+S10XR               22E2
+S10YL               22E6
+S10YU               22E4
+S11XL               22F0
+S11XR               22F2
+S11YL               22F6
+S11YU               22F4
+S12XL               2300
+S12XR               2302
+S12YL               2306
+S12YU               2304
+S13XL               2310
+S13XR               2312
+S13YL               2316
+S13YU               2314
+S14XL               2320
+S14XR               2322
+S14YL               2326
+S14YU               2324
+S15XL               2330
+S15XR               2332
+S15YL               2336
+S15YU               2334
+S16XL               2340
+S16XR               2342
+S16YL               2346
+S16YU               2344
+S17XL               2350
+S17XR               2352
+S17YL               2356
+S17YU               2354
+S1XL                2250
+S1XR                2252
+S1YL                2256
+S1YU                2254
+S2XL                2260
+S2XR                2262
+S2YL                2266
+S2YU                2264
+S3XL                2270
+S3XR                2272
+S3YL                2276
+S3YU                2274
+S4XL                2280
+S4XR                2282
+S4YL                2286
+S4YU                2284
+S5XL                2290
+S5XR                2292
+S5YL                2296
+S5YU                2294
+S6XL                22A0
+S6XR                22A2
+S6YL                22A6
+S6YU                22A4
+S7XL                22B0
+S7XR                22B2
+S7YL                22B6
+S7YU                22B4
+S8XL                22C0
+S8XR                22C2
+S8YL                22C6
+S8YU                22C4
+S9XL                22D0
+S9XR                22D2
+S9YL                22D6
+S9YU                22D4
+SCORE               2368
+SECOND1             145E
+SECOND2             1468
+SECOND3             1472
+SECOND4             148C
+SECOND5             149E
+SECOND6             14B6
+SETUP               10B0
+SHOOTER1            16EE
+SHOOTER10           1C66
+SHOOTER11           1CEA
+SHOOTER12           1D8E
+SHOOTER13           1E20
+SHOOTER14           1EBE
+SHOOTER15           1F42
+SHOOTER16           1FC6
+SHOOTER17           2064
+SHOOTER2            1790
+SHOOTER3            1822
+SHOOTER4            18C0
+SHOOTER5            1952
+SHOOTER6            19F0
+SHOOTER7            1A8E
+SHOOTER8            1B2C
+SHOOTER9            1BBC
+START               1000
+T                   2364
+TERM                15A0
+TIMEOUT             164C
+TS1                 2258
+TS10                227A
+TS11                227C
+TS12                227E
+TS13                2288
+TS14                228A
+TS15                228C
+TS16                228E
+TS17                2298
+TS18                229A
+TS19                229C
+TS2                 225A
+TS20                229E
+TS21                22A8
+TS22                22AA
+TS23                22AC
+TS24                22AE
+TS25                22B8
+TS26                22BA
+TS27                22BC
+TS28                22BE
+TS29                22C8
+TS3                 225C
+TS30                22CA
+TS31                22CC
+TS32                22CE
+TS33                22D8
+TS34                22DA
+TS35                22DC
+TS36                22DE
+TS37                22E8
+TS38                22EA
+TS39                22EC
+TS4                 225E
+TS40                22EE
+TS41                22F8
+TS42                22FA
+TS43                22FC
+TS44                22FE
+TS45                2308
+TS46                230A
+TS47                230C
+TS48                230E
+TS49                2318
+TS5                 2268
+TS50                231A
+TS51                231C
+TS52                231E
+TS53                2328
+TS54                232A
+TS55                232C
+TS56                232E
+TS57                2338
+TS58                233A
+TS59                233C
+TS6                 226A
+TS60                233E
+TS61                2348
+TS62                234A
+TS63                234C
+TS64                234E
+TS65                2358
+TS66                235A
+TS67                235C
+TS68                235E
+TS7                 226C
+TS8                 226E
+TS9                 2278
+XL                  21F0
+XR                  21F2
+YB                  21F6
+YU                  21F4
+_00000000           13D6
+_00000001           13F2
+_00000002           140E
+_00000003           142A
+_00000004           173A
+_00000005           17DC
+_00000006           186E
+_00000007           190C
+_00000008           199E
+_00000009           1A3C
+_0000000A           1ADA
+_0000000B           1B78
+_0000000C           1C08
+_0000000D           1CB2
+_0000000E           1D36
+_0000000F           1DDA
+_00000010           1E6C
+_00000011           1F0A
+_00000012           1F8E
+_00000013           2012
+_00000014           20B0
+_00000015           219C
+_00000016           21B6
+_00000017           21D0
+_00000018           21EA
